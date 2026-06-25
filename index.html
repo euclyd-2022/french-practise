@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>French Practice</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f4;
+    --bg-tertiary: #f0efed;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --border-light: rgba(0,0,0,0.1);
+    --border-mid: rgba(0,0,0,0.18);
+    --border-strong: rgba(0,0,0,0.28);
+    --color-success-bg: #eaf3de;
+    --color-success-text: #27500a;
+    --color-danger-bg: #fcebeb;
+    --color-danger-text: #a32d2d;
+    --color-amber-bg: #faeeda;
+    --color-amber-text: #633806;
+    --color-info-text: #185fa5;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --text-primary: #f2f2f7;
+      --text-secondary: #aeaeb2;
+      --text-tertiary: #6b6b6d;
+      --border-light: rgba(255,255,255,0.1);
+      --border-mid: rgba(255,255,255,0.18);
+      --border-strong: rgba(255,255,255,0.28);
+      --color-success-bg: #173404;
+      --color-success-text: #c0dd97;
+      --color-danger-bg: #501313;
+      --color-danger-text: #f09595;
+      --color-amber-bg: #412402;
+      --color-amber-text: #fac775;
+      --color-info-text: #85b7eb;
+    }
+  }
+
+  html, body {
+    height: 100%;
+    font-family: var(--font);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100%;
+    background: var(--bg-tertiary);
+  }
+
+  .screen { display: none; padding: 1rem 1rem 2rem; }
+  .screen.active { display: block; }
+
+  .card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 8px;
+  }
+
+  .english-text {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-primary);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 12px;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: none;
+    font-family: var(--font);
+    -webkit-appearance: none;
+  }
+  textarea:focus { outline: none; border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(99,99,99,0.1); }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+    font-family: var(--font);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-primary:active { opacity: 0.8; transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: var(--font);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-secondary:active { background: var(--bg-secondary); }
+
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-top: 0.5rem;
+  }
+  .header-title { font-size: 18px; font-weight: 600; }
+
+  .icon-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-secondary); font-size: 22px; padding: 6px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .icon-btn:active { color: var(--text-primary); }
+
+  .count-badge {
+    font-size: 12px;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 3px 10px;
+    color: var(--text-secondary);
+  }
+
+  .feedback-section { margin-bottom: 1.25rem; }
+  .feedback-title {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .chunk-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .chunk-pair { margin-bottom: 8px; }
+  .chunk-en { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+  .chunk-fr { font-size: 17px; font-weight: 500; color: var(--text-primary); }
+  .chunk-note { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+  .chunk-formal { font-size: 13px; color: var(--color-info-text); margin-top: 6px; line-height: 1.55; }
+
+  .save-btn {
+    margin-top: 10px; padding: 8px 14px; font-size: 13px;
+    background: transparent;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    color: var(--text-primary); cursor: pointer; font-family: var(--font);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .save-btn.saved { color: var(--color-success-text); border-color: var(--color-success-text); }
+  .save-btn:disabled { cursor: default; }
+
+  .note-box {
+    border-radius: var(--radius-md);
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .note-success { background: var(--color-success-bg); color: var(--color-success-text); }
+  .note-danger  { background: var(--color-danger-bg);  color: var(--color-danger-text); }
+  .note-amber   { background: var(--color-amber-bg);   color: var(--color-amber-text); }
+
+  .your-attempt {
+    font-size: 15px; line-height: 1.65;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  .phrase-item {
+    border-bottom: 0.5px solid var(--border-light);
+    padding: 13px 0;
+    display: flex; flex-direction: column; gap: 3px;
+    position: relative;
+  }
+  .phrase-item:last-child { border-bottom: none; }
+  .phrase-en { font-size: 12px; color: var(--text-secondary); }
+  .phrase-fr { font-size: 16px; font-weight: 500; color: var(--text-primary); padding-right: 28px; }
+  .phrase-note { font-size: 12px; color: var(--text-tertiary); line-height: 1.4; }
+  .phrase-formal { font-size: 12px; color: var(--color-info-text); }
+
+  .delete-btn {
+    position: absolute; right: 0; top: 13px;
+    background: none; border: none; cursor: pointer;
+    color: var(--text-tertiary); font-size: 18px; padding: 2px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .empty-state {
+    text-align: center; padding: 3rem 1rem;
+    color: var(--text-secondary); font-size: 15px; line-height: 1.6;
+  }
+  .empty-state i { font-size: 36px; display: block; margin: 0 auto 12px; opacity: 0.4; }
+
+  .api-setup { padding-top: 3rem; }
+  .api-hero { margin-bottom: 2rem; }
+  .api-hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+  .api-hero p { font-size: 15px; color: var(--text-secondary); line-height: 1.65; }
+
+  .api-input {
+    width: 100%; padding: 13px;
+    font-size: 15px; letter-spacing: 0.02em;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: monospace;
+    margin: 8px 0 4px;
+    -webkit-appearance: none;
+  }
+  .api-input:focus { outline: none; border-color: var(--border-strong); }
+  .hint { font-size: 13px; color: var(--text-tertiary); line-height: 1.55; margin-top: 6px; }
+  .hint a { color: var(--color-info-text); }
+  .error-msg { color: var(--color-danger-text); font-size: 13px; margin-top: 8px; min-height: 18px; }
+
+  .divider { height: 0.5px; background: var(--border-light); margin: 1rem 0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Setup screen -->
+  <div id="screen-setup" class="screen active api-setup">
+    <div class="api-hero">
+      <h1>Bonjour</h1>
+      <p>Translate everyday English into natural, spoken French. Get feedback on phrases — not just words.</p>
+    </div>
+    <div class="card">
+      <div class="label">Anthropic API key</div>
+      <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
+      <div class="hint">Your key is saved in this browser only — never sent anywhere except api.anthropic.com. Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+      <div id="setup-error" class="error-msg"></div>
+    </div>
+    <button class="btn-primary" id="start-btn" onclick="startApp()">Start practising</button>
+  </div>
+
+  <!-- Main practice screen -->
+  <div id="screen-main" class="screen">
+    <div class="header">
+      <div class="header-title">Translate this</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="count-badge" id="phrase-count">0 saved</span>
+        <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank"><i class="ti ti-bookmark"></i></button>
+        <button class="icon-btn" onclick="showSetup()" aria-label="Settings"><i class="ti ti-settings"></i></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">English</div>
+      <div class="english-text" id="english-para">Loading your first passage…</div>
+    </div>
+    <div class="label" style="margin-bottom:6px;">Your French translation</div>
+    <textarea id="translation-input" placeholder="Écrivez votre traduction ici…" oninput="checkReady()"></textarea>
+    <button class="btn-primary" id="check-btn" onclick="checkTranslation()" disabled>Check my translation</button>
+    <button class="btn-secondary" id="new-btn" onclick="newPassage()">New passage &nbsp;<i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;"></i></button>
+  </div>
+
+  <!-- Feedback screen -->
+  <div id="screen-feedback" class="screen">
+    <div class="header">
+      <button class="icon-btn" onclick="showMain()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+      <div class="header-title">Feedback</div>
+      <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank"><i class="ti ti-bookmark"></i></button>
+    </div>
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="label">Your translation</div>
+      <div class="your-attempt" id="your-attempt-display"></div>
+    </div>
+    <div id="feedback-content"></div>
+    <button class="btn-primary" onclick="newPassage()">Next passage &nbsp;<i class="ti ti-arrow-right" style="font-size:15px;vertical-align:-2px;"></i></button>
+    <button class="btn-secondary" onclick="showMain()">Edit my translation</button>
+  </div>
+
+  <!-- Phrase bank screen -->
+  <div id="screen-bank" class="screen">
+    <div class="header">
+      <button class="icon-btn" onclick="goBack()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+      <div class="header-title">Phrase bank</div>
+      <span class="count-badge" id="bank-count">0</span>
+    </div>
+    <div id="bank-content"></div>
+  </div>
+
+</div>
+<script>
+let apiKey = localStorage.getItem('fr_api_key') || '';
+let currentPassage = '';
+let phraseBank = JSON.parse(localStorage.getItem('fr_phrases') || '[]');
+let previousScreen = 'screen-main';
+let isLoading = false;
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function getCurrentScreen() {
+  const s = document.querySelector('.screen.active');
+  return s ? s.id : 'screen-main';
+}
+function showMain() { show('screen-main'); }
+function showSetup() { previousScreen = getCurrentScreen(); show('screen-setup'); }
+function showBank() { previousScreen = getCurrentScreen(); renderBank(); show('screen-bank'); }
+function goBack() { show(previousScreen || 'screen-main'); }
+
+function startApp() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    document.getElementById('setup-error').textContent = "That doesn't look like a valid Anthropic key — it should start with sk-ant-";
+    return;
+  }
+  apiKey = key;
+  localStorage.setItem('fr_api_key', key);
+  document.getElementById('setup-error').textContent = '';
+  show('screen-main');
+  loadPassage();
+}
+
+function checkReady() {
+  const val = document.getElementById('translation-input').value.trim();
+  document.getElementById('check-btn').disabled = val.length < 4 || isLoading;
+}
+
+async function callClaude(system, user) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || 'API error ' + res.status);
+  }
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+const TOPICS = [
+  'a weekend plan with friends',
+  'cooking a meal at home',
+  'describing your neighbourhood',
+  'talking about a recent film or series',
+  'making plans for a holiday',
+  'chatting about the weather and what to do',
+  'describing your daily routine',
+  'a problem at work or with a colleague',
+  'a conversation at a café or market',
+  'catching up with an old friend',
+  'talking about a sport or hobby',
+  'describing somewhere you recently visited',
+  'a minor household annoyance',
+  'plans for the evening',
+  'talking about family'
+];
+
+async function loadPassage() {
+  isLoading = true;
+  document.getElementById('english-para').textContent = 'Generating passage…';
+  document.getElementById('translation-input').value = '';
+  document.getElementById('check-btn').disabled = true;
+  const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  try {
+    const system = 'You generate short English passages for French translation practice. Write 3–4 sentences of natural, everyday spoken English on the given topic. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
+    const text = await callClaude(system, 'Topic: ' + topic);
+    currentPassage = text.trim();
+    document.getElementById('english-para').textContent = currentPassage;
+  } catch(e) {
+    document.getElementById('english-para').textContent = 'Couldn\'t load a passage. Please check your API key in settings.';
+  }
+  isLoading = false;
+}
+
+async function newPassage() {
+  show('screen-main');
+  await loadPassage();
+}
+
+async function checkTranslation() {
+  const attempt = document.getElementById('translation-input').value.trim();
+  if (!attempt || isLoading) return;
+  isLoading = true;
+  document.getElementById('check-btn').disabled = true;
+  document.getElementById('check-btn').innerHTML = '<span class="spinner"></span>Checking…';
+  document.getElementById('your-attempt-display').textContent = attempt;
+
+  const system = `You are a French language coach helping an English speaker practise translating into natural spoken French. You must respond ONLY with valid JSON — no markdown fences, no preamble, nothing else.
+
+Analyse their French translation focusing on:
+1. PHRASES: chunks where they translated word-for-word from English and produced something unnatural, or where there is a much better idiomatic spoken French expression to learn as a whole chunk. Prioritise multi-word lexical chunks (2–6 words) over single words.
+2. GRAMMAR: tense, agreement, or word order errors — brief notes only.
+3. SPELLING: accent errors or misspellings — note lightly, do not dwell.
+
+Spoken casual French rules to apply: dropping "ne" in negation is correct here; "on" instead of "nous" is preferred; elided/contracted forms are fine. Judge accordingly.
+
+Where the formal written version of a phrase differs meaningfully from the spoken one, note it briefly.
+
+Also note one thing they did well, if anything.
+
+Respond with this exact JSON shape:
+{
+  "wellDone": "one sentence about something they got right, or empty string if nothing notable",
+  "phrases": [
+    {
+      "en": "English chunk (2–6 words)",
+      "fr": "Natural spoken French equivalent",
+      "note": "one sentence explanation",
+      "formal": "formal/written version if meaningfully different, else empty string"
+    }
+  ],
+  "grammar": ["brief grammar note as a string"],
+  "spelling": ["spelling or accent note as a string"]
+}
+
+Keep phrases array to the 2–4 most useful chunks. Omit grammar and spelling arrays if there are no issues.`;
+
+  try {
+    const raw = await callClaude(system, `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`);
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const data = JSON.parse(clean);
+    renderFeedback(data);
+    show('screen-feedback');
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+    console.error(e);
+  }
+  isLoading = false;
+  document.getElementById('check-btn').disabled = false;
+  document.getElementById('check-btn').innerHTML = 'Check my translation';
+}
+
+function renderFeedback(data) {
+  let html = '';
+
+  if (data.wellDone && data.wellDone.trim()) {
+    html += `<div class="note-box note-success"><i class="ti ti-check" style="margin-right:6px;vertical-align:-2px;"></i>${esc(data.wellDone)}</div>`;
+  }
+
+  if (data.phrases && data.phrases.length > 0) {
+    html += `<div class="feedback-section">
+      <div class="feedback-title"><i class="ti ti-vocabulary" style="font-size:15px;"></i> Phrases to learn</div>`;
+    data.phrases.forEach((p, i) => {
+      const safeP = JSON.stringify(p);
+      html += `<div class="chunk-card">
+        <div class="chunk-pair">
+          <div class="chunk-en">${esc(p.en)}</div>
+          <div class="chunk-fr">${esc(p.fr)}</div>
+        </div>
+        <div class="chunk-note">${esc(p.note)}</div>
+        ${p.formal ? `<div class="chunk-formal"><i class="ti ti-pencil" style="font-size:12px;margin-right:4px;vertical-align:-1px;"></i>Formally: <em>${esc(p.formal)}</em></div>` : ''}
+        <button class="save-btn" id="pbtn-${i}" onclick='savePhrase(${safeP}, "pbtn-${i}")'>
+          <i class="ti ti-bookmark" style="font-size:14px;margin-right:4px;vertical-align:-2px;"></i>Save phrase
+        </button>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  if (data.grammar && data.grammar.length > 0) {
+    html += `<div class="feedback-section">
+      <div class="feedback-title"><i class="ti ti-adjustments" style="font-size:15px;"></i> Grammar</div>`;
+    data.grammar.forEach(g => { html += `<div class="note-box note-danger">${esc(g)}</div>`; });
+    html += '</div>';
+  }
+
+  if (data.spelling && data.spelling.length > 0) {
+    html += `<div class="feedback-section">
+      <div class="feedback-title"><i class="ti ti-pencil" style="font-size:15px;"></i> Spelling &amp; accents</div>`;
+    data.spelling.forEach(s => { html += `<div class="note-box note-amber">${esc(s)}</div>`; });
+    html += '</div>';
+  }
+
+  document.getElementById('feedback-content').innerHTML = html;
+}
+
+function savePhrase(phrase, btnId) {
+  phraseBank.push(phrase);
+  localStorage.setItem('fr_phrases', JSON.stringify(phraseBank));
+  updatePhraseCount();
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.classList.add('saved');
+    btn.innerHTML = '<i class="ti ti-check" style="font-size:14px;margin-right:4px;vertical-align:-2px;"></i>Saved';
+    btn.disabled = true;
+  }
+}
+
+function updatePhraseCount() {
+  const n = phraseBank.length;
+  document.getElementById('phrase-count').textContent = n === 1 ? '1 saved' : n + ' saved';
+  const bc = document.getElementById('bank-count');
+  if (bc) bc.textContent = n;
+}
+
+function renderBank() {
+  document.getElementById('bank-count').textContent = phraseBank.length;
+  const el = document.getElementById('bank-content');
+  if (phraseBank.length === 0) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-bookmark"></i>No phrases saved yet.<br><br>Save chunks from your feedback to build your personal phrasebook.</div>';
+    return;
+  }
+  let html = '<div class="card">';
+  phraseBank.forEach((p, i) => {
+    html += `<div class="phrase-item">
+      <button class="delete-btn" onclick="deletePhrase(${i})" aria-label="Remove phrase"><i class="ti ti-x"></i></button>
+      <div class="phrase-en">${esc(p.en)}</div>
+      <div class="phrase-fr">${esc(p.fr)}</div>
+      ${p.note ? `<div class="phrase-note">${esc(p.note)}</div>` : ''}
+      ${p.formal ? `<div class="phrase-formal"><i class="ti ti-pencil" style="font-size:11px;margin-right:3px;"></i>Formally: <em>${esc(p.formal)}</em></div>` : ''}
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function deletePhrase(i) {
+  phraseBank.splice(i, 1);
+  localStorage.setItem('fr_phrases', JSON.stringify(phraseBank));
+  updatePhraseCount();
+  renderBank();
+}
+
+function esc(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+updatePhraseCount();
+if (apiKey) {
+  show('screen-main');
+  loadPassage();
+} else {
+  show('screen-setup');
+}
+</script>
+</body>
+</html>
