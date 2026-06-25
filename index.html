@@ -59,13 +59,7 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  .app {
-    max-width: 480px;
-    margin: 0 auto;
-    min-height: 100%;
-    background: var(--bg-tertiary);
-  }
-
+  .app { max-width: 480px; margin: 0 auto; min-height: 100%; background: var(--bg-tertiary); }
   .screen { display: none; padding: 1rem 1rem 2rem; }
   .screen.active { display: block; }
 
@@ -78,88 +72,54 @@
   }
 
   .label {
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 11px; font-weight: 500;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
+    text-transform: uppercase; letter-spacing: 0.07em;
     margin-bottom: 8px;
   }
 
-  .english-text {
-    font-size: 17px;
-    line-height: 1.7;
-    color: var(--text-primary);
-  }
+  .english-text { font-size: 17px; line-height: 1.7; color: var(--text-primary); }
 
   textarea {
-    width: 100%;
-    min-height: 130px;
-    font-size: 16px;
-    line-height: 1.6;
-    padding: 12px;
+    width: 100%; min-height: 130px;
+    font-size: 16px; line-height: 1.6; padding: 12px;
     border: 0.5px solid var(--border-mid);
     border-radius: var(--radius-md);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    resize: none;
-    font-family: var(--font);
-    -webkit-appearance: none;
+    background: var(--bg-primary); color: var(--text-primary);
+    resize: none; font-family: var(--font); -webkit-appearance: none;
   }
   textarea:focus { outline: none; border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(99,99,99,0.1); }
 
   .btn-primary {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background: var(--text-primary);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 10px;
-    font-family: var(--font);
-    -webkit-tap-highlight-color: transparent;
+    display: block; width: 100%; padding: 15px;
+    background: var(--text-primary); color: var(--bg-primary);
+    border: none; border-radius: var(--radius-md);
+    font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 10px;
+    font-family: var(--font); -webkit-tap-highlight-color: transparent;
   }
   .btn-primary:active { opacity: 0.8; transform: scale(0.99); }
   .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
   .btn-secondary {
-    display: block;
-    width: 100%;
-    padding: 13px;
-    background: transparent;
-    color: var(--text-primary);
+    display: block; width: 100%; padding: 13px;
+    background: transparent; color: var(--text-primary);
     border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    font-size: 15px;
-    cursor: pointer;
-    margin-top: 8px;
-    font-family: var(--font);
-    -webkit-tap-highlight-color: transparent;
+    border-radius: var(--radius-md); font-size: 15px; cursor: pointer;
+    margin-top: 8px; font-family: var(--font); -webkit-tap-highlight-color: transparent;
   }
   .btn-secondary:active { background: var(--bg-secondary); }
 
   .spinner {
-    display: inline-block;
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-    padding-top: 0.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem; padding-top: 0.5rem;
   }
   .header-title { font-size: 18px; font-weight: 600; }
 
@@ -171,27 +131,19 @@
   .icon-btn:active { color: var(--text-primary); }
 
   .count-badge {
-    font-size: 12px;
-    background: var(--bg-secondary);
-    border-radius: 20px;
-    padding: 3px 10px;
-    color: var(--text-secondary);
+    font-size: 12px; background: var(--bg-secondary);
+    border-radius: 20px; padding: 3px 10px; color: var(--text-secondary);
   }
 
   .feedback-section { margin-bottom: 1.25rem; }
   .feedback-title {
-    font-size: 13px; font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--text-secondary);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
   }
 
   .chunk-card {
-    background: var(--bg-primary);
-    border: 0.5px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 12px 14px;
-    margin-bottom: 8px;
+    background: var(--bg-primary); border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 8px;
   }
   .chunk-pair { margin-bottom: 8px; }
   .chunk-en { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
@@ -201,21 +153,16 @@
 
   .save-btn {
     margin-top: 10px; padding: 8px 14px; font-size: 13px;
-    background: transparent;
-    border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    color: var(--text-primary); cursor: pointer; font-family: var(--font);
-    -webkit-tap-highlight-color: transparent;
+    background: transparent; border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md); color: var(--text-primary);
+    cursor: pointer; font-family: var(--font); -webkit-tap-highlight-color: transparent;
   }
   .save-btn.saved { color: var(--color-success-text); border-color: var(--color-success-text); }
   .save-btn:disabled { cursor: default; }
 
   .note-box {
-    border-radius: var(--radius-md);
-    padding: 11px 14px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    line-height: 1.55;
+    border-radius: var(--radius-md); padding: 11px 14px;
+    margin-bottom: 8px; font-size: 14px; line-height: 1.55;
   }
   .note-success { background: var(--color-success-bg); color: var(--color-success-text); }
   .note-danger  { background: var(--color-danger-bg);  color: var(--color-danger-text); }
@@ -223,15 +170,12 @@
 
   .your-attempt {
     font-size: 15px; line-height: 1.65;
-    color: var(--text-secondary);
-    font-style: italic;
+    color: var(--text-secondary); font-style: italic;
   }
 
   .phrase-item {
     border-bottom: 0.5px solid var(--border-light);
-    padding: 13px 0;
-    display: flex; flex-direction: column; gap: 3px;
-    position: relative;
+    padding: 13px 0; display: flex; flex-direction: column; gap: 3px; position: relative;
   }
   .phrase-item:last-child { border-bottom: none; }
   .phrase-en { font-size: 12px; color: var(--text-secondary); }
@@ -252,28 +196,43 @@
   }
   .empty-state i { font-size: 36px; display: block; margin: 0 auto 12px; opacity: 0.4; }
 
-  .api-setup { padding-top: 3rem; }
-  .api-hero { margin-bottom: 2rem; }
+  .api-setup { padding-top: 2.5rem; }
+  .api-hero { margin-bottom: 1.75rem; }
   .api-hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
   .api-hero p { font-size: 15px; color: var(--text-secondary); line-height: 1.65; }
 
+  .provider-picker {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem;
+  }
+  .provider-btn {
+    padding: 12px 8px; text-align: center; font-size: 14px; font-weight: 500;
+    border: 0.5px solid var(--border-mid); border-radius: var(--radius-md);
+    background: var(--bg-primary); color: var(--text-secondary);
+    cursor: pointer; font-family: var(--font); transition: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .provider-btn.active {
+    background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary);
+  }
+  .provider-btn span { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; opacity: 0.7; }
+
   .api-input {
-    width: 100%; padding: 13px;
-    font-size: 15px; letter-spacing: 0.02em;
-    border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-family: monospace;
-    margin: 8px 0 4px;
-    -webkit-appearance: none;
+    width: 100%; padding: 13px; font-size: 15px; letter-spacing: 0.02em;
+    border: 0.5px solid var(--border-mid); border-radius: var(--radius-md);
+    background: var(--bg-secondary); color: var(--text-primary);
+    font-family: monospace; margin: 8px 0 4px; -webkit-appearance: none;
   }
   .api-input:focus { outline: none; border-color: var(--border-strong); }
+
   .hint { font-size: 13px; color: var(--text-tertiary); line-height: 1.55; margin-top: 6px; }
   .hint a { color: var(--color-info-text); }
   .error-msg { color: var(--color-danger-text); font-size: 13px; margin-top: 8px; min-height: 18px; }
 
-  .divider { height: 0.5px; background: var(--border-light); margin: 1rem 0; }
+  .provider-badge {
+    font-size: 11px; padding: 2px 7px; border-radius: 10px;
+    background: var(--bg-secondary); color: var(--text-tertiary);
+    margin-left: 6px; vertical-align: middle;
+  }
 </style>
 </head>
 <body>
@@ -285,24 +244,44 @@
       <h1>Bonjour</h1>
       <p>Translate everyday English into natural, spoken French. Get feedback on phrases — not just words.</p>
     </div>
+
     <div class="card">
-      <div class="label">Anthropic API key</div>
-      <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
-      <div class="hint">
-        Your key is saved in this browser only — never sent anywhere except api.anthropic.com.
-        Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — you'll need to add a small credit balance to activate it (a few pounds goes a long way at this usage level).
+      <div class="label">AI provider</div>
+      <div class="provider-picker">
+        <button class="provider-btn active" id="btn-anthropic" onclick="selectProvider('anthropic')">
+          Anthropic<span>Claude · paid</span>
+        </button>
+        <button class="provider-btn" id="btn-gemini" onclick="selectProvider('gemini')">
+          Google<span>Gemini · free tier</span>
+        </button>
       </div>
+
+      <div id="provider-info-anthropic">
+        <div class="label">Anthropic API key</div>
+        <input class="api-input" type="password" id="key-anthropic" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
+        <div class="hint">Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — you'll need a small credit balance to activate it (a few pounds goes a long way).</div>
+      </div>
+
+      <div id="provider-info-gemini" style="display:none;">
+        <div class="label">Gemini API key</div>
+        <input class="api-input" type="password" id="key-gemini" placeholder="AQ..." autocomplete="off" spellcheck="false" />
+        <div class="hint">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> — no credit card needed. Uses Gemini 2.0 Flash.</div>
+      </div>
+
       <div id="setup-error" class="error-msg"></div>
     </div>
-    <div id="setup-status" style="display:none;" class="note-box note-success" style="margin-bottom:1rem;"></div>
-    <button class="btn-primary" id="start-btn" onclick="startApp()">Save key &amp; start</button>
+
+    <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back to app</button>
   </div>
 
   <!-- Main practice screen -->
   <div id="screen-main" class="screen">
     <div class="header">
-      <div class="header-title">Translate this</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="header-title">Translate this</div>
+        <span class="provider-badge" id="provider-label">Claude</span>
+      </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
         <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank"><i class="ti ti-bookmark"></i></button>
@@ -316,7 +295,7 @@
     <div class="label" style="margin-bottom:6px;">Your French translation</div>
     <textarea id="translation-input" placeholder="Écrivez votre traduction ici…" oninput="checkReady()"></textarea>
     <button class="btn-primary" id="check-btn" onclick="checkTranslation()" disabled>Check my translation</button>
-    <button class="btn-secondary" id="new-btn" onclick="newPassage()">New passage &nbsp;<i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;"></i></button>
+    <button class="btn-secondary" onclick="newPassage()">New passage &nbsp;<i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;"></i></button>
   </div>
 
   <!-- Feedback screen -->
@@ -342,21 +321,25 @@
       <div class="header-title">Phrase bank</div>
       <div style="display:flex;gap:4px;align-items:center;">
         <span class="count-badge" id="bank-count">0</span>
-        <button class="icon-btn" onclick="exportAnki()" aria-label="Download as Anki flashcards" title="Download Anki flashcards"><i class="ti ti-download"></i></button>
+        <button class="icon-btn" onclick="exportAnki()" aria-label="Download Anki flashcards" title="Download Anki flashcards"><i class="ti ti-download"></i></button>
       </div>
     </div>
-    <div id="bank-export-msg" style="display:none;" class="note-box note-success" style="margin-bottom:1rem;"></div>
+    <div id="bank-export-msg" class="note-box note-success" style="display:none;margin-bottom:0.75rem;"></div>
     <div id="bank-content"></div>
   </div>
 
 </div>
 <script>
-let apiKey = localStorage.getItem('fr_api_key') || '';
+// ── State ──────────────────────────────────────────────────────────────────
+let provider    = localStorage.getItem('fr_provider') || 'anthropic';
+let anthropicKey = localStorage.getItem('fr_key_anthropic') || '';
+let geminiKey    = localStorage.getItem('fr_key_gemini') || '';
 let currentPassage = '';
-let phraseBank = JSON.parse(localStorage.getItem('fr_phrases') || '[]');
+let phraseBank  = JSON.parse(localStorage.getItem('fr_phrases') || '[]');
 let previousScreen = 'screen-main';
-let isLoading = false;
+let isLoading   = false;
 
+// ── Navigation ─────────────────────────────────────────────────────────────
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -366,52 +349,83 @@ function getCurrentScreen() {
   const s = document.querySelector('.screen.active');
   return s ? s.id : 'screen-main';
 }
-function showMain() { show('screen-main'); }
+function showMain()  { show('screen-main'); }
+function showBank()  { previousScreen = getCurrentScreen(); renderBank(); show('screen-bank'); }
+function goBack()    { show(previousScreen || 'screen-main'); }
+
 function showSetup() {
   previousScreen = getCurrentScreen();
-  const inp = document.getElementById('api-key-input');
-  inp.value = apiKey || '';
-  inp.placeholder = apiKey ? '(key saved — paste a new one to change)' : 'sk-ant-...';
+  selectProvider(provider, false);
+  const ak = document.getElementById('key-anthropic');
+  const gk = document.getElementById('key-gemini');
+  ak.value = anthropicKey || '';
+  ak.placeholder = anthropicKey ? '(saved — paste to replace)' : 'sk-ant-...';
+  gk.value = geminiKey || '';
+  gk.placeholder = geminiKey ? '(saved — paste to replace)' : 'AQ...';
   document.getElementById('setup-error').textContent = '';
-  const backBtn = document.getElementById('back-to-app-btn');
-  if (backBtn) backBtn.style.display = apiKey ? 'block' : 'none';
-  const startBtn = document.getElementById('start-btn');
-  if (startBtn) startBtn.textContent = apiKey ? 'Update key' : 'Save key & start';
+  const hasKey = (provider === 'anthropic' && anthropicKey) || (provider === 'gemini' && geminiKey);
+  document.getElementById('back-to-app-btn').style.display = hasKey ? 'block' : 'none';
   show('screen-setup');
 }
-function showBank() { previousScreen = getCurrentScreen(); renderBank(); show('screen-bank'); }
-function goBack() { show(previousScreen || 'screen-main'); }
 
+// ── Provider selection ─────────────────────────────────────────────────────
+function selectProvider(p, updateState = true) {
+  if (updateState) provider = p;
+  document.getElementById('btn-anthropic').classList.toggle('active', p === 'anthropic');
+  document.getElementById('btn-gemini').classList.toggle('active', p === 'gemini');
+  document.getElementById('provider-info-anthropic').style.display = p === 'anthropic' ? 'block' : 'none';
+  document.getElementById('provider-info-gemini').style.display    = p === 'gemini'    ? 'block' : 'none';
+}
+
+// ── Setup save ─────────────────────────────────────────────────────────────
 function startApp() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key.startsWith('sk-ant-') && key !== '') {
-    document.getElementById('setup-error').textContent = "That doesn't look like a valid Anthropic key — it should start with sk-ant-";
-    return;
+  const ak = document.getElementById('key-anthropic').value.trim();
+  const gk = document.getElementById('key-gemini').value.trim();
+  const errEl = document.getElementById('setup-error');
+  errEl.textContent = '';
+
+  if (provider === 'anthropic') {
+    if (ak && !ak.startsWith('sk-ant-')) {
+      errEl.textContent = "That doesn't look like a valid Anthropic key — it should start with sk-ant-";
+      return;
+    }
+    if (!ak && !anthropicKey) { errEl.textContent = 'Please enter your Anthropic API key.'; return; }
+    if (ak) { anthropicKey = ak; localStorage.setItem('fr_key_anthropic', ak); }
+  } else {
+    if (gk && !gk.startsWith('AQ')) {
+      errEl.textContent = "That doesn't look like a valid Gemini key — it should start with AQ";
+      return;
+    }
+    if (!gk && !geminiKey) { errEl.textContent = 'Please enter your Gemini API key.'; return; }
+    if (gk) { geminiKey = gk; localStorage.setItem('fr_key_gemini', gk); }
   }
-  if (!key && !apiKey) {
-    document.getElementById('setup-error').textContent = "Please enter your API key.";
-    return;
-  }
-  if (key) {
-    apiKey = key;
-    localStorage.setItem('fr_api_key', key);
-  }
-  document.getElementById('setup-error').textContent = '';
+
+  localStorage.setItem('fr_provider', provider);
+  updateProviderLabel();
   show('screen-main');
-  if (!currentPassage) loadPassage();
+  if (!currentPassage) loadPassage(); else { /* keep existing passage */ }
 }
 
-function checkReady() {
-  const val = document.getElementById('translation-input').value.trim();
-  document.getElementById('check-btn').disabled = val.length < 4 || isLoading;
+function updateProviderLabel() {
+  const el = document.getElementById('provider-label');
+  if (el) el.textContent = provider === 'gemini' ? 'Gemini' : 'Claude';
 }
 
-async function callClaude(system, user) {
+// ── API calls ──────────────────────────────────────────────────────────────
+async function callAI(systemPrompt, userMessage) {
+  if (provider === 'gemini') {
+    return callGemini(systemPrompt, userMessage);
+  } else {
+    return callAnthropic(systemPrompt, userMessage);
+  }
+}
+
+async function callAnthropic(system, user) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
+      'x-api-key': anthropicKey,
       'anthropic-version': '2023-06-01',
       'anthropic-dangerous-direct-browser-access': 'true'
     },
@@ -425,16 +439,39 @@ async function callClaude(system, user) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const status = res.status;
-    const msg = err.error?.message || '';
-    if (status === 401) throw new Error('AUTH: Invalid API key — please check it in settings.');
-    if (status === 403) throw new Error('CREDIT: Your account needs a credit balance. Visit console.anthropic.com → Billing to add a small amount (£5 goes a long way).');
+    if (status === 401) throw new Error('AUTH: Invalid API key — please update it in settings.');
+    if (status === 403) throw new Error('CREDIT: Your Anthropic account needs a credit balance. Visit console.anthropic.com → Billing.');
     if (status === 429) throw new Error('LIMIT: Too many requests — wait a moment and try again.');
-    throw new Error(msg || 'API error ' + status);
+    throw new Error(err.error?.message || 'API error ' + status);
   }
   const data = await res.json();
   return data.content[0].text;
 }
 
+async function callGemini(system, user) {
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const status = res.status;
+    if (status === 400) throw new Error('AUTH: Invalid Gemini API key — please update it in settings.');
+    if (status === 429) throw new Error('LIMIT: Gemini rate limit reached — wait a moment and try again.');
+    throw new Error(err.error?.message || 'Gemini API error ' + status);
+  }
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+// ── Passage loading ────────────────────────────────────────────────────────
 const TOPICS = [
   'a weekend plan with friends',
   'cooking a meal at home',
@@ -453,34 +490,75 @@ const TOPICS = [
   'talking about family'
 ];
 
+const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 3–4 sentences of natural, everyday spoken English on the given topic. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
+
 async function loadPassage() {
   isLoading = true;
   document.getElementById('english-para').textContent = 'Generating passage…';
   document.getElementById('translation-input').value = '';
   document.getElementById('check-btn').disabled = true;
+  currentPassage = '';
   const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
   try {
-    const system = 'You generate short English passages for French translation practice. Write 3–4 sentences of natural, everyday spoken English on the given topic. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
-    const text = await callClaude(system, 'Topic: ' + topic);
+    const text = await callAI(PASSAGE_SYSTEM, 'Topic: ' + topic);
     currentPassage = text.trim();
     document.getElementById('english-para').textContent = currentPassage;
   } catch(e) {
-    const msg = e.message || '';
-    if (msg.startsWith('CREDIT:')) {
-      document.getElementById('english-para').innerHTML = '⚠️ ' + msg.replace('CREDIT: ', '') + '<br><br><a href="https://console.anthropic.com" target="_blank" style="color:var(--color-info-text);">Go to console.anthropic.com →</a>';
-    } else if (msg.startsWith('AUTH:')) {
-      document.getElementById('english-para').textContent = '⚠️ ' + msg.replace('AUTH: ', '') + ' Tap the settings icon above to update it.';
-    } else {
-      document.getElementById('english-para').textContent = '⚠️ ' + (msg || 'Couldn\'t load a passage. Tap the settings icon to check your API key.');
-    }
+    showPassageError(e.message || '');
   }
   isLoading = false;
+}
+
+function showPassageError(msg) {
+  const el = document.getElementById('english-para');
+  if (msg.startsWith('CREDIT:')) {
+    el.innerHTML = '&#9888; ' + msg.replace('CREDIT: ', '') +
+      '<br><br><a href="https://console.anthropic.com" target="_blank" style="color:var(--color-info-text);">Go to console.anthropic.com →</a>';
+  } else if (msg.startsWith('AUTH:')) {
+    el.textContent = '⚠ ' + msg.replace('AUTH: ', '') + ' Tap the settings icon above to update it.';
+  } else {
+    el.textContent = '⚠ ' + (msg || 'Couldn\'t load a passage. Check your API key in settings.');
+  }
 }
 
 async function newPassage() {
   show('screen-main');
   await loadPassage();
 }
+
+function checkReady() {
+  const val = document.getElementById('translation-input').value.trim();
+  document.getElementById('check-btn').disabled = val.length < 4 || isLoading;
+}
+
+// ── Translation checking ───────────────────────────────────────────────────
+const FEEDBACK_SYSTEM = `You are a French language coach helping an English speaker practise translating into natural spoken French. You must respond ONLY with valid JSON — no markdown fences, no preamble, nothing else.
+
+Analyse their French translation focusing on:
+1. PHRASES: chunks where they translated word-for-word from English and produced something unnatural, or where there is a much better idiomatic spoken French expression to learn as a whole chunk. Prioritise multi-word lexical chunks (2–6 words) over single words.
+2. GRAMMAR: tense, agreement, or word order errors — brief notes only.
+3. SPELLING: accent errors or misspellings — note lightly, do not dwell.
+
+Spoken casual French rules: dropping "ne" in negation is correct; "on" instead of "nous" is preferred; contracted/elided forms are fine. Judge accordingly.
+Where the formal written version of a phrase differs meaningfully, note it briefly.
+Note one thing they did well, if anything.
+
+Respond with this exact JSON shape:
+{
+  "wellDone": "one sentence about something they got right, or empty string",
+  "phrases": [
+    {
+      "en": "English chunk (2–6 words)",
+      "fr": "Natural spoken French equivalent",
+      "note": "one sentence explanation",
+      "formal": "formal version if meaningfully different, else empty string"
+    }
+  ],
+  "grammar": ["brief grammar note"],
+  "spelling": ["spelling or accent note"]
+}
+
+Keep phrases to the 2–4 most useful chunks. Omit grammar and spelling arrays if there are no issues.`;
 
 async function checkTranslation() {
   const attempt = document.getElementById('translation-input').value.trim();
@@ -490,44 +568,15 @@ async function checkTranslation() {
   document.getElementById('check-btn').innerHTML = '<span class="spinner"></span>Checking…';
   document.getElementById('your-attempt-display').textContent = attempt;
 
-  const system = `You are a French language coach helping an English speaker practise translating into natural spoken French. You must respond ONLY with valid JSON — no markdown fences, no preamble, nothing else.
-
-Analyse their French translation focusing on:
-1. PHRASES: chunks where they translated word-for-word from English and produced something unnatural, or where there is a much better idiomatic spoken French expression to learn as a whole chunk. Prioritise multi-word lexical chunks (2–6 words) over single words.
-2. GRAMMAR: tense, agreement, or word order errors — brief notes only.
-3. SPELLING: accent errors or misspellings — note lightly, do not dwell.
-
-Spoken casual French rules to apply: dropping "ne" in negation is correct here; "on" instead of "nous" is preferred; elided/contracted forms are fine. Judge accordingly.
-
-Where the formal written version of a phrase differs meaningfully from the spoken one, note it briefly.
-
-Also note one thing they did well, if anything.
-
-Respond with this exact JSON shape:
-{
-  "wellDone": "one sentence about something they got right, or empty string if nothing notable",
-  "phrases": [
-    {
-      "en": "English chunk (2–6 words)",
-      "fr": "Natural spoken French equivalent",
-      "note": "one sentence explanation",
-      "formal": "formal/written version if meaningfully different, else empty string"
-    }
-  ],
-  "grammar": ["brief grammar note as a string"],
-  "spelling": ["spelling or accent note as a string"]
-}
-
-Keep phrases array to the 2–4 most useful chunks. Omit grammar and spelling arrays if there are no issues.`;
-
   try {
-    const raw = await callClaude(system, `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`);
+    const raw = await callAI(FEEDBACK_SYSTEM,
+      `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`);
     const clean = raw.replace(/```json|```/g, '').trim();
     const data = JSON.parse(clean);
     renderFeedback(data);
     show('screen-feedback');
   } catch(e) {
-    alert('Something went wrong. Please try again.');
+    alert('Something went wrong checking your translation. Please try again.\n\n' + (e.message || ''));
     console.error(e);
   }
   isLoading = false;
@@ -535,6 +584,7 @@ Keep phrases array to the 2–4 most useful chunks. Omit grammar and spelling ar
   document.getElementById('check-btn').innerHTML = 'Check my translation';
 }
 
+// ── Feedback rendering ─────────────────────────────────────────────────────
 function renderFeedback(data) {
   let html = '';
 
@@ -543,10 +593,9 @@ function renderFeedback(data) {
   }
 
   if (data.phrases && data.phrases.length > 0) {
-    html += `<div class="feedback-section">
-      <div class="feedback-title"><i class="ti ti-vocabulary" style="font-size:15px;"></i> Phrases to learn</div>`;
+    html += `<div class="feedback-section"><div class="feedback-title"><i class="ti ti-vocabulary" style="font-size:15px;"></i> Phrases to learn</div>`;
     data.phrases.forEach((p, i) => {
-      const safeP = JSON.stringify(p);
+      const safeP = JSON.stringify(p).replace(/'/g, '&#39;');
       html += `<div class="chunk-card">
         <div class="chunk-pair">
           <div class="chunk-en">${esc(p.en)}</div>
@@ -563,15 +612,13 @@ function renderFeedback(data) {
   }
 
   if (data.grammar && data.grammar.length > 0) {
-    html += `<div class="feedback-section">
-      <div class="feedback-title"><i class="ti ti-adjustments" style="font-size:15px;"></i> Grammar</div>`;
+    html += `<div class="feedback-section"><div class="feedback-title"><i class="ti ti-adjustments" style="font-size:15px;"></i> Grammar</div>`;
     data.grammar.forEach(g => { html += `<div class="note-box note-danger">${esc(g)}</div>`; });
     html += '</div>';
   }
 
   if (data.spelling && data.spelling.length > 0) {
-    html += `<div class="feedback-section">
-      <div class="feedback-title"><i class="ti ti-pencil" style="font-size:15px;"></i> Spelling &amp; accents</div>`;
+    html += `<div class="feedback-section"><div class="feedback-title"><i class="ti ti-pencil" style="font-size:15px;"></i> Spelling &amp; accents</div>`;
     data.spelling.forEach(s => { html += `<div class="note-box note-amber">${esc(s)}</div>`; });
     html += '</div>';
   }
@@ -579,6 +626,7 @@ function renderFeedback(data) {
   document.getElementById('feedback-content').innerHTML = html;
 }
 
+// ── Phrase bank ────────────────────────────────────────────────────────────
 function savePhrase(phrase, btnId) {
   phraseBank.push(phrase);
   localStorage.setItem('fr_phrases', JSON.stringify(phraseBank));
@@ -627,11 +675,11 @@ function deletePhrase(i) {
 }
 
 function exportAnki() {
+  const msgEl = document.getElementById('bank-export-msg');
   if (phraseBank.length === 0) {
-    const msg = document.getElementById('bank-export-msg');
-    msg.textContent = 'No phrases to export yet — save some first.';
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+    msgEl.textContent = 'No phrases to export yet — save some first.';
+    msgEl.style.display = 'block';
+    setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
     return;
   }
   const lines = phraseBank.map(p => {
@@ -641,36 +689,35 @@ function exportAnki() {
     if (p.formal) backParts.push('Formally: ' + p.formal);
     return front + '\t' + backParts.join(' — ');
   });
-  const header = '#separator:tab\n#html:false\n#notetype:Basic\n#deck:French Practice\n#tags:french spoken\n';
-  const content = header + lines.join('\n');
+  const content = '#separator:tab\n#html:false\n#notetype:Basic\n#deck:French Practice\n#tags:french spoken\n' + lines.join('\n');
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'french-phrases.txt';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  const msg = document.getElementById('bank-export-msg');
-  msg.textContent = phraseBank.length + ' phrases exported. Import into Anki via File → Import.';
-  msg.style.display = 'block';
-  setTimeout(() => { msg.style.display = 'none'; }, 4000);
+  a.href = url; a.download = 'french-phrases.txt';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  msgEl.textContent = phraseBank.length + ' phrases exported. Import into Anki via File → Import.';
+  msgEl.style.display = 'block';
+  setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
 }
 
-
+// ── Utilities ──────────────────────────────────────────────────────────────
+function esc(str) {
   if (!str) return '';
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Init
+// ── Init ───────────────────────────────────────────────────────────────────
 updatePhraseCount();
-if (apiKey) {
+updateProviderLabel();
+selectProvider(provider, false);
+
+const hasKey = (provider === 'anthropic' && anthropicKey) || (provider === 'gemini' && geminiKey);
+if (hasKey) {
   show('screen-main');
   loadPassage();
 } else {
-  const backBtn = document.getElementById('back-to-app-btn');
-  if (backBtn) backBtn.style.display = 'none';
+  document.getElementById('back-to-app-btn').style.display = 'none';
   show('screen-setup');
 }
 </script>
