@@ -288,10 +288,15 @@
     <div class="card">
       <div class="label">Anthropic API key</div>
       <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
-      <div class="hint">Your key is saved in this browser only — never sent anywhere except api.anthropic.com. Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+      <div class="hint">
+        Your key is saved in this browser only — never sent anywhere except api.anthropic.com.
+        Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — you'll need to add a small credit balance to activate it (a few pounds goes a long way at this usage level).
+      </div>
       <div id="setup-error" class="error-msg"></div>
     </div>
-    <button class="btn-primary" id="start-btn" onclick="startApp()">Start practising</button>
+    <div id="setup-status" style="display:none;" class="note-box note-success" style="margin-bottom:1rem;"></div>
+    <button class="btn-primary" id="start-btn" onclick="startApp()">Save key &amp; start</button>
+    <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back to app</button>
   </div>
 
   <!-- Main practice screen -->
@@ -335,8 +340,12 @@
     <div class="header">
       <button class="icon-btn" onclick="goBack()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
       <div class="header-title">Phrase bank</div>
-      <span class="count-badge" id="bank-count">0</span>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <span class="count-badge" id="bank-count">0</span>
+        <button class="icon-btn" onclick="exportAnki()" aria-label="Download as Anki flashcards" title="Download Anki flashcards"><i class="ti ti-download"></i></button>
+      </div>
     </div>
+    <div id="bank-export-msg" style="display:none;" class="note-box note-success" style="margin-bottom:1rem;"></div>
     <div id="bank-content"></div>
   </div>
 
@@ -358,21 +367,38 @@ function getCurrentScreen() {
   return s ? s.id : 'screen-main';
 }
 function showMain() { show('screen-main'); }
-function showSetup() { previousScreen = getCurrentScreen(); show('screen-setup'); }
+function showSetup() {
+  previousScreen = getCurrentScreen();
+  const inp = document.getElementById('api-key-input');
+  inp.value = apiKey || '';
+  inp.placeholder = apiKey ? '(key saved — paste a new one to change)' : 'sk-ant-...';
+  document.getElementById('setup-error').textContent = '';
+  const backBtn = document.getElementById('back-to-app-btn');
+  if (backBtn) backBtn.style.display = apiKey ? 'block' : 'none';
+  const startBtn = document.getElementById('start-btn');
+  if (startBtn) startBtn.textContent = apiKey ? 'Update key' : 'Save key & start';
+  show('screen-setup');
+}
 function showBank() { previousScreen = getCurrentScreen(); renderBank(); show('screen-bank'); }
 function goBack() { show(previousScreen || 'screen-main'); }
 
 function startApp() {
   const key = document.getElementById('api-key-input').value.trim();
-  if (!key.startsWith('sk-ant-')) {
+  if (!key.startsWith('sk-ant-') && key !== '') {
     document.getElementById('setup-error').textContent = "That doesn't look like a valid Anthropic key — it should start with sk-ant-";
     return;
   }
-  apiKey = key;
-  localStorage.setItem('fr_api_key', key);
+  if (!key && !apiKey) {
+    document.getElementById('setup-error').textContent = "Please enter your API key.";
+    return;
+  }
+  if (key) {
+    apiKey = key;
+    localStorage.setItem('fr_api_key', key);
+  }
   document.getElementById('setup-error').textContent = '';
   show('screen-main');
-  loadPassage();
+  if (!currentPassage) loadPassage();
 }
 
 function checkReady() {
@@ -398,7 +424,12 @@ async function callClaude(system, user) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || 'API error ' + res.status);
+    const status = res.status;
+    const msg = err.error?.message || '';
+    if (status === 401) throw new Error('AUTH: Invalid API key — please check it in settings.');
+    if (status === 403) throw new Error('CREDIT: Your account needs a credit balance. Visit console.anthropic.com → Billing to add a small amount (£5 goes a long way).');
+    if (status === 429) throw new Error('LIMIT: Too many requests — wait a moment and try again.');
+    throw new Error(msg || 'API error ' + status);
   }
   const data = await res.json();
   return data.content[0].text;
@@ -434,7 +465,14 @@ async function loadPassage() {
     currentPassage = text.trim();
     document.getElementById('english-para').textContent = currentPassage;
   } catch(e) {
-    document.getElementById('english-para').textContent = 'Couldn\'t load a passage. Please check your API key in settings.';
+    const msg = e.message || '';
+    if (msg.startsWith('CREDIT:')) {
+      document.getElementById('english-para').innerHTML = '⚠️ ' + msg.replace('CREDIT: ', '') + '<br><br><a href="https://console.anthropic.com" target="_blank" style="color:var(--color-info-text);">Go to console.anthropic.com →</a>';
+    } else if (msg.startsWith('AUTH:')) {
+      document.getElementById('english-para').textContent = '⚠️ ' + msg.replace('AUTH: ', '') + ' Tap the settings icon above to update it.';
+    } else {
+      document.getElementById('english-para').textContent = '⚠️ ' + (msg || 'Couldn\'t load a passage. Tap the settings icon to check your API key.');
+    }
   }
   isLoading = false;
 }
@@ -588,7 +626,39 @@ function deletePhrase(i) {
   renderBank();
 }
 
-function esc(str) {
+function exportAnki() {
+  if (phraseBank.length === 0) {
+    const msg = document.getElementById('bank-export-msg');
+    msg.textContent = 'No phrases to export yet — save some first.';
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+    return;
+  }
+  const lines = phraseBank.map(p => {
+    const front = p.fr || '';
+    const backParts = [p.en || ''];
+    if (p.note) backParts.push(p.note);
+    if (p.formal) backParts.push('Formally: ' + p.formal);
+    return front + '\t' + backParts.join(' — ');
+  });
+  const header = '#separator:tab\n#html:false\n#notetype:Basic\n#deck:French Practice\n#tags:french spoken\n';
+  const content = header + lines.join('\n');
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'french-phrases.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  const msg = document.getElementById('bank-export-msg');
+  msg.textContent = phraseBank.length + ' phrases exported. Import into Anki via File → Import.';
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 4000);
+}
+
+
   if (!str) return '';
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -599,6 +669,8 @@ if (apiKey) {
   show('screen-main');
   loadPassage();
 } else {
+  const backBtn = document.getElementById('back-to-app-btn');
+  if (backBtn) backBtn.style.display = 'none';
   show('screen-setup');
 }
 </script>
