@@ -20,9 +20,9 @@ The app defaults to **casual spoken French** throughout — dropped *ne*, *on* i
 
 ## Setup
 
-### 1. Get an Anthropic API key
+### 1. Get an Anthropic or Gemini API key
 
-Go to [console.anthropic.com](https://console.anthropic.com), create an account, and generate an API key. You'll need to add a small credit balance under Billing before the key will work — a few pounds/dollars goes a long way at this usage level (each practice session costs a fraction of a penny).
+Go to [console.anthropic.com](https://console.anthropic.com) or [aistudio.google.com/apikey](https://aistudio.google.com/apikey) , create an account, and generate an API key. You'll need to add a small credit balance under Billing before the key will work — a few pounds/dollars goes a long way at this usage level (each practice session costs a fraction of a penny).
 
 ### 2. Host the file
 
