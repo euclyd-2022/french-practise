@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v1.7</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v1.9</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v1.7</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v1.9</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -298,6 +298,9 @@
     <textarea id="translation-input" placeholder="Écrivez votre traduction ici…" oninput="checkReady()"></textarea>
     <button class="btn-primary" id="check-btn" onclick="checkTranslation()" disabled>Check my translation</button>
     <button class="btn-secondary" onclick="newPassage()">New passage &nbsp;<i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;"></i></button>
+    <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
+      <i class="ti ti-bookmark" style="font-size:15px;vertical-align:-2px;margin-right:6px;"></i>View phrase bank &amp; export to Anki
+    </button>
     <button class="btn-secondary" onclick="showSetup()" style="margin-top:16px;border-color:transparent;color:var(--text-tertiary);font-size:13px;">
       <i class="ti ti-settings" style="font-size:14px;vertical-align:-2px;margin-right:6px;"></i>Settings — change API key or provider
     </button>
@@ -317,6 +320,9 @@
     <div id="feedback-content"></div>
     <button class="btn-primary" onclick="newPassage()">Next passage &nbsp;<i class="ti ti-arrow-right" style="font-size:15px;vertical-align:-2px;"></i></button>
     <button class="btn-secondary" onclick="showMain()">Edit my translation</button>
+    <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
+      <i class="ti ti-bookmark" style="font-size:15px;vertical-align:-2px;margin-right:6px;"></i>View phrase bank &amp; export to Anki
+    </button>
   </div>
 
   <!-- Phrase bank screen -->
@@ -482,7 +488,7 @@ async function callGemini(system, user) {
     body: JSON.stringify({
       system_instruction: { parts: [{ text: system }] },
       contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: { maxOutputTokens: 2000, temperature: 0.7 }
+      generationConfig: { maxOutputTokens: 3000, temperature: 0.7 }
     })
   });
   if (!res.ok) {
@@ -515,7 +521,7 @@ const TOPICS = [
   'talking about family'
 ];
 
-const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 3–4 sentences of natural, everyday spoken English on the given topic. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
+const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 2–3 sentences of natural, everyday spoken English on the given topic. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
 
 async function loadPassage() {
   isLoading = true;
@@ -561,29 +567,31 @@ const FEEDBACK_SYSTEM = `You are a French language coach helping an English spea
 
 Analyse their French translation focusing on:
 1. PHRASES: chunks where they translated word-for-word from English and produced something unnatural, or where there is a much better idiomatic spoken French expression to learn as a whole chunk. Prioritise multi-word lexical chunks (2–6 words) over single words.
-2. GRAMMAR: tense, agreement, or word order errors — brief notes only.
-3. SPELLING: accent errors or misspellings — note lightly, do not dwell.
+2. GRAMMAR: tense, agreement, or word order errors — one very brief note only.
+3. SPELLING: accent errors or misspellings — one very brief note only.
 
 Spoken casual French rules: dropping "ne" in negation is correct; "on" instead of "nous" is preferred; contracted/elided forms are fine. Judge accordingly.
-Where the formal written version of a phrase differs meaningfully, note it briefly.
-Note one thing they did well, if anything.
+Where the formal written version of a phrase differs meaningfully, note it in one short phrase only.
+Note one thing they did well, if anything — one sentence maximum.
+
+IMPORTANT: Keep the entire response short and tight. Maximum 2 phrases. Every note must be one sentence or fewer. The full JSON response must stay under 400 words.
 
 Respond with this exact JSON shape:
 {
-  "wellDone": "one sentence about something they got right, or empty string",
+  "wellDone": "one short sentence or empty string",
   "phrases": [
     {
       "en": "English chunk (2–6 words)",
       "fr": "Natural spoken French equivalent",
-      "note": "one sentence explanation",
+      "note": "one short sentence",
       "formal": "formal version if meaningfully different, else empty string"
     }
   ],
-  "grammar": ["brief grammar note"],
-  "spelling": ["spelling or accent note"]
+  "grammar": ["one brief grammar note"],
+  "spelling": ["one brief spelling note"]
 }
 
-Keep phrases to the 2–4 most useful chunks. Omit grammar and spelling arrays if there are no issues.`;
+Omit grammar and spelling arrays if there are no issues.`;
 
 async function checkTranslation() {
   const attempt = document.getElementById('translation-input').value.trim();
@@ -596,16 +604,13 @@ async function checkTranslation() {
   try {
     const raw = await callAI(FEEDBACK_SYSTEM,
       `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`);
-    console.log('Raw AI response:', raw);
     const clean = raw.replace(/```json|```/g, '').trim();
-    console.log('Cleaned response:', clean);
     let data;
     try {
       data = JSON.parse(clean);
     } catch(parseErr) {
-      console.error('JSON parse error:', parseErr);
-      console.error('Failed to parse:', clean);
-      throw new Error('JSON parse failed. Raw response (first 300 chars):\n\n' + clean.substring(0, 300));
+      throw new Error('The feedback response was incomplete. Please try again.');
+    }
     }
     renderFeedback(data);
     show('screen-feedback');
