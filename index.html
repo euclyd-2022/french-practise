@@ -596,13 +596,16 @@ async function checkTranslation() {
   try {
     const raw = await callAI(FEEDBACK_SYSTEM,
       `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`);
+    console.log('Raw AI response:', raw);
     const clean = raw.replace(/```json|```/g, '').trim();
+    console.log('Cleaned response:', clean);
     let data;
     try {
       data = JSON.parse(clean);
     } catch(parseErr) {
-      // Response was likely cut off — ask user to try again
-      throw new Error('The feedback response was incomplete. Please try again.');
+      console.error('JSON parse error:', parseErr);
+      console.error('Failed to parse:', clean);
+      throw new Error('JSON parse failed. Raw response (first 300 chars):\n\n' + clean.substring(0, 300));
     }
     renderFeedback(data);
     show('screen-feedback');
