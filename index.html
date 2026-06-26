@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v1.6</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v1.7</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v1.6</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v1.7</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -298,6 +298,9 @@
     <textarea id="translation-input" placeholder="Écrivez votre traduction ici…" oninput="checkReady()"></textarea>
     <button class="btn-primary" id="check-btn" onclick="checkTranslation()" disabled>Check my translation</button>
     <button class="btn-secondary" onclick="newPassage()">New passage &nbsp;<i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;"></i></button>
+    <button class="btn-secondary" onclick="showSetup()" style="margin-top:16px;border-color:transparent;color:var(--text-tertiary);font-size:13px;">
+      <i class="ti ti-settings" style="font-size:14px;vertical-align:-2px;margin-right:6px;"></i>Settings — change API key or provider
+    </button>
   </div>
 
   <!-- Feedback screen -->
@@ -537,7 +540,7 @@ function showPassageError(msg) {
     el.innerHTML = '&#9888; ' + msg.replace('CREDIT: ', '') +
       '<br><br><a href="https://console.anthropic.com" target="_blank" style="color:var(--color-info-text);">Go to console.anthropic.com →</a>';
   } else if (msg.startsWith('AUTH:')) {
-    el.textContent = '⚠ ' + msg.replace('AUTH: ', '') + ' Tap the settings icon above to update it.';
+    el.innerHTML = '⚠ ' + msg.replace('AUTH: ', '') + ' <a href="#" onclick="showSetup();return false;" style="color:var(--color-info-text);">Update key →</a>';
   } else {
     el.textContent = '⚠ ' + (msg || 'Couldn\'t load a passage. Check your API key in settings.');
   }
