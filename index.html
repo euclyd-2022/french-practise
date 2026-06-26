@@ -264,7 +264,7 @@
 
       <div id="provider-info-gemini" style="display:none;">
         <div class="label">Gemini API key</div>
-        <input class="api-input" type="password" id="key-gemini" placeholder="AQ..." autocomplete="off" spellcheck="false" />
+        <input class="api-input" type="password" id="key-gemini" placeholder="AQ... or AIza..." autocomplete="off" spellcheck="false" />
         <div class="hint">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> — no credit card needed. Uses Gemini 2.0 Flash.</div>
       </div>
 
@@ -272,7 +272,7 @@
     </div>
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
-    <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back to app</button>
+    <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
   </div>
 
   <!-- Main practice screen -->
@@ -285,7 +285,7 @@
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
         <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank"><i class="ti ti-bookmark"></i></button>
-        <button class="icon-btn" onclick="showSetup()" aria-label="Settings"><i class="ti ti-settings"></i></button>
+        <button class="icon-btn" onclick="showSetup()" aria-label="Settings — switch provider or update key"><i class="ti ti-settings"></i></button>
       </div>
     </div>
     <div class="card">
@@ -361,7 +361,7 @@ function showSetup() {
   ak.value = anthropicKey || '';
   ak.placeholder = anthropicKey ? '(saved — paste to replace)' : 'sk-ant-...';
   gk.value = geminiKey || '';
-  gk.placeholder = geminiKey ? '(saved — paste to replace)' : 'AQ...';
+  gk.placeholder = geminiKey ? '(saved — paste to replace)' : 'AIza...';
   document.getElementById('setup-error').textContent = '';
   const hasKey = (provider === 'anthropic' && anthropicKey) || (provider === 'gemini' && geminiKey);
   document.getElementById('back-to-app-btn').style.display = hasKey ? 'block' : 'none';
@@ -392,8 +392,8 @@ function startApp() {
     if (!ak && !anthropicKey) { errEl.textContent = 'Please enter your Anthropic API key.'; return; }
     if (ak) { anthropicKey = ak; localStorage.setItem('fr_key_anthropic', ak); }
   } else {
-    if (gk && !gk.startsWith('AQ')) {
-      errEl.textContent = "That doesn't look like a valid Gemini key — it should start with AQ";
+    if (gk && !gk.startsWith('AIza') && !gk.startsWith('AQ')) {
+      errEl.textContent = "That doesn't look like a valid Gemini key — it should start with AIza or AQ";
       return;
     }
     if (!gk && !geminiKey) { errEl.textContent = 'Please enter your Gemini API key.'; return; }
@@ -402,8 +402,14 @@ function startApp() {
 
   localStorage.setItem('fr_provider', provider);
   updateProviderLabel();
+  const wasOnApp = previousScreen === 'screen-main' || previousScreen === 'screen-feedback';
+  const providerChanged = localStorage.getItem('fr_active_provider') !== provider;
+  localStorage.setItem('fr_active_provider', provider);
   show('screen-main');
-  if (!currentPassage) loadPassage(); else { /* keep existing passage */ }
+  if (!currentPassage || providerChanged) {
+    currentPassage = '';
+    loadPassage();
+  }
 }
 
 function updateProviderLabel() {
@@ -411,12 +417,20 @@ function updateProviderLabel() {
   if (el) el.textContent = provider === 'gemini' ? 'Gemini' : 'Claude';
 }
 
-// ── API calls ──────────────────────────────────────────────────────────────
-async function callAI(systemPrompt, userMessage) {
-  if (provider === 'gemini') {
-    return callGemini(systemPrompt, userMessage);
-  } else {
-    return callAnthropic(systemPrompt, userMessage);
+async function callAI(systemPrompt, userMessage, retry = true) {
+  try {
+    if (provider === 'gemini') {
+      return await callGemini(systemPrompt, userMessage);
+    } else {
+      return await callAnthropic(systemPrompt, userMessage);
+    }
+  } catch(e) {
+    if (retry && e.message && e.message.startsWith('LIMIT:')) {
+      // Wait 5 seconds then try once more before giving up
+      await new Promise(r => setTimeout(r, 5000));
+      return callAI(systemPrompt, userMessage, false);
+    }
+    throw e;
   }
 }
 
@@ -449,7 +463,7 @@ async function callAnthropic(system, user) {
 }
 
 async function callGemini(system, user) {
-  const model = 'gemini-2.0-flash-lite';
+  const model = 'gemini-2.0-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
   const res = await fetch(url, {
     method: 'POST',
