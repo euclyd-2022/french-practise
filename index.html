@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v1.9</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.0</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v1.9</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.0</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -430,22 +430,21 @@ function updateProviderLabel() {
   if (el) el.textContent = provider === 'gemini' ? 'Gemini' : 'Claude';
 }
 
-async function callAI(systemPrompt, userMessage, retry = true) {
+async function callAI(systemPrompt, userMessage, retry = true, onChunk) {
   try {
     if (provider === 'gemini') {
-      return await callGemini(systemPrompt, userMessage);
+      return await callGemini(systemPrompt, userMessage, onChunk);
     } else {
       return await callAnthropic(systemPrompt, userMessage);
     }
   } catch(e) {
     if (retry && e.message && e.message.startsWith('LIMIT:')) {
-      // Wait 15 seconds then try once more before giving up
       await new Promise(r => setTimeout(r, 15000));
       const paraEl = document.getElementById('english-para');
       if (paraEl && paraEl.textContent.includes('Generating')) {
         paraEl.textContent = 'Rate limit hit — retrying…';
       }
-      return callAI(systemPrompt, userMessage, false);
+      return callAI(systemPrompt, userMessage, false, onChunk);
     }
     throw e;
   }
@@ -479,9 +478,9 @@ async function callAnthropic(system, user) {
   return data.content[0].text;
 }
 
-async function callGemini(system, user) {
+async function callGemini(system, user, onChunk) {
   const model = 'gemini-2.5-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${geminiKey}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -498,8 +497,28 @@ async function callGemini(system, user) {
     if (status === 429) throw new Error('LIMIT: Gemini rate limit reached — wait a moment and try again.');
     throw new Error(err.error?.message || 'Gemini API error ' + status);
   }
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let accumulated = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    for (const line of chunk.split('\n')) {
+      if (!line.startsWith('data: ')) continue;
+      const json = line.slice(6).trim();
+      if (!json || json === '[DONE]') continue;
+      try {
+        const parsed = JSON.parse(json);
+        const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (text) {
+          accumulated += text;
+          if (onChunk) onChunk(accumulated);
+        }
+      } catch(e) { /* partial SSE line, skip */ }
+    }
+  }
+  return accumulated;
 }
 
 // ── Passage loading ────────────────────────────────────────────────────────
@@ -601,21 +620,50 @@ async function checkTranslation() {
   document.getElementById('check-btn').innerHTML = '<span class="spinner"></span>Checking…';
   document.getElementById('your-attempt-display').textContent = attempt;
 
+  // Switch to feedback screen immediately so user can watch it arrive
+  document.getElementById('feedback-content').innerHTML =
+    '<div style="color:var(--text-tertiary);font-size:14px;padding:1rem 0;">Analysing your translation…</div>';
+  show('screen-feedback');
+
   try {
+    let lastGoodData = null;
+
+    const onChunk = (accumulated) => {
+      // Try to parse whatever we have so far and render partial results
+      const clean = accumulated.replace(/```json|```/g, '').trim();
+      try {
+        const data = JSON.parse(clean);
+        lastGoodData = data;
+        renderFeedback(data, false); // false = not final yet
+      } catch(e) {
+        // Not valid JSON yet — try to extract completed sections
+        renderPartial(clean);
+      }
+    };
+
     const raw = await callAI(FEEDBACK_SYSTEM,
-      `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`);
+      `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`,
+      true, onChunk);
+
+    // Final render with complete response
     const clean = raw.replace(/```json|```/g, '').trim();
     let data;
     try {
       data = JSON.parse(clean);
     } catch(parseErr) {
-      throw new Error('The feedback response was incomplete. Please try again.');
+      // Use last good partial parse if available
+      if (lastGoodData) {
+        renderFeedback(lastGoodData, true);
+      } else {
+        document.getElementById('feedback-content').innerHTML =
+          '<div class="note-box note-danger">The response was incomplete. Try again with a shorter translation.</div>';
+      }
+      return;
     }
-    }
-    renderFeedback(data);
-    show('screen-feedback');
+    renderFeedback(data, true);
   } catch(e) {
-    alert('Something went wrong checking your translation.\n\n' + (e.message || 'Please try again.'));
+    document.getElementById('feedback-content').innerHTML =
+      '<div class="note-box note-danger">' + esc(e.message || 'Something went wrong. Please try again.') + '</div>';
     console.error(e);
   }
   isLoading = false;
@@ -623,8 +671,20 @@ async function checkTranslation() {
   document.getElementById('check-btn').innerHTML = 'Check my translation';
 }
 
+function renderPartial(raw) {
+  // Show whatever raw text we have while streaming, in a preformatted block
+  const el = document.getElementById('feedback-content');
+  const existing = el.querySelector('.stream-preview');
+  const div = existing || document.createElement('div');
+  div.className = 'stream-preview';
+  div.style.cssText = 'font-size:13px;color:var(--text-tertiary);white-space:pre-wrap;padding:8px;background:var(--bg-secondary);border-radius:8px;';
+  div.textContent = raw;
+  if (!existing) el.innerHTML = '';
+  if (!existing) el.appendChild(div);
+}
+
 // ── Feedback rendering ─────────────────────────────────────────────────────
-function renderFeedback(data) {
+function renderFeedback(data, isFinal = true) {
   let html = '';
 
   if (data.wellDone && data.wellDone.trim()) {
@@ -662,6 +722,9 @@ function renderFeedback(data) {
     html += '</div>';
   }
 
+  if (!isFinal) {
+    html += '<div style="font-size:12px;color:var(--text-tertiary);text-align:center;padding:8px;">receiving…</div>';
+  }
   document.getElementById('feedback-content').innerHTML = html;
 }
 
