@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.1</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.2</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.1</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.2</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -521,41 +521,88 @@ async function callGemini(system, user, onChunk) {
   return accumulated;
 }
 
-// ── Passage loading ────────────────────────────────────────────────────────
-const TOPICS = [
-  'a weekend plan with friends',
-  'cooking a meal at home',
-  'describing your neighbourhood',
-  'talking about a recent film or series',
-  'making plans for a holiday',
-  'chatting about the weather and what to do',
-  'describing your daily routine',
-  'a problem at work or with a colleague',
-  'a conversation at a café or market',
-  'catching up with an old friend',
-  'talking about a sport or hobby',
-  'describing somewhere you recently visited',
-  'a minor household annoyance',
-  'plans for the evening',
-  'talking about family'
+// ── Pre-written passage bank ──────────────────────────────────────────────
+const PASSAGE_BANK = [
+  "I'm thinking of heading to the market this morning — do you fancy coming along? They've got a great cheese stall and I need to pick up some tomatoes.",
+  "We ended up watching that new series everyone's been talking about. It's only three episodes in but I'm already hooked — the writing is really sharp.",
+  "My neighbour's been doing building work since seven this morning and it's driving me mad. I can't hear myself think.",
+  "I've got my sister's birthday coming up next week and I've no idea what to get her. She's really hard to buy for.",
+  "We're thinking of going somewhere warm in October — maybe Spain or Portugal. Have you been anywhere good lately?",
+  "I missed the bus this morning so I had to walk, and then it started raining. Not the best start to the day.",
+  "I've been trying to get to bed earlier but I always end up on my phone. I really need to sort out my sleep.",
+  "There's a new café that's opened up on the high street — I went in yesterday and the coffee was excellent. A bit pricey but worth it.",
+  "I bumped into Tom the other day, which was a nice surprise. We haven't seen each other since the summer.",
+  "The match was a bit of a letdown to be honest. We played well in the first half but then completely fell apart.",
+  "I've been trying to cook more at home instead of getting takeaways. Last night I made a pasta dish from scratch — came out pretty well actually.",
+  "My phone's been playing up all week. The battery drains really fast and it keeps freezing at random moments.",
+  "We went to a really nice restaurant for our anniversary — proper French food, the kind where everything takes about two hours.",
+  "I've got so much on at work at the moment. My boss keeps piling things on and I can't seem to get on top of it.",
+  "My daughter's just started secondary school and she's finding it a bit overwhelming. There's so many more kids than at primary.",
+  "I've started going for a walk every morning before work. It's only twenty minutes but it makes such a difference to how I feel.",
+  "We need to sort out the garden before winter. The lawn's a state and there's a fence panel that's been broken for months.",
+  "I was supposed to meet a friend for dinner last night but she cancelled at the last minute. A bit annoying but these things happen.",
+  "Have you seen how cold it's got all of a sudden? I had to dig out my winter coat this morning — feels way too early.",
+  "My car's in the garage this week so I've been taking the bus. I'd forgotten how unreliable it is.",
+  "We're thinking of doing a proper clear-out at the weekend — the loft is absolutely full of stuff we never use.",
+  "I finally got round to watching that film you recommended. I thought it was brilliant — I can see why you liked it so much.",
+  "My dad's been really into growing vegetables this year. He keeps turning up with bags of courgettes and tomatoes.",
+  "I've been trying to cut down on coffee but it's not going well. I get a headache by mid-morning if I don't have one.",
+  "We had some friends round for dinner at the weekend. It was a really nice evening — we didn't end up going to bed until midnight.",
+  "There was a massive queue at the supermarket yesterday. I only went in for a few things and ended up being there for forty minutes.",
+  "I've been thinking about learning something new — maybe a language or an instrument. I just need to actually commit to it.",
+  "The heating's been on the blink all week. The engineer's coming tomorrow but it's been absolutely freezing in the house.",
+  "My commute's been a nightmare lately — there are roadworks on the main road and everything's backed up for miles.",
+  "We went for a walk along the coast on Sunday. The weather was perfect and it wasn't too busy — just what we needed.",
+  "I can't decide whether to book a gym membership or just carry on running outside. The gym's convenient but it's quite expensive.",
+  "My mate's just got a dog and he's completely obsessed with it. He sends me photos about three times a day.",
+  "I've been meaning to call my mum back for days but somehow I keep forgetting. She's going to think I've disappeared.",
+  "The kids are off school next week so we're trying to think of things to do. The forecast looks alright so hopefully we can get outside.",
+  "I ordered something online two weeks ago and it still hasn't arrived. The tracking just says it's in a depot somewhere.",
+  "We went to a brilliant pub quiz last night. Came second, which was a bit gutting — we were one point behind the winners.",
+  "I've been sleeping really badly lately. I wake up at about three in the morning and then can't get back off.",
+  "My colleague's leaving at the end of the month so we're organising a leaving do. I just need to find somewhere that's not too expensive.",
+  "I finally sorted out that drawer in the kitchen that's been full of random junk for years. Found things in there I'd completely forgotten about.",
+  "It's my parents' wedding anniversary next month — they're going to be married for forty years. We're thinking of organising a surprise dinner."
 ];
 
-const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 2–3 sentences of natural, everyday spoken English on the given topic. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
+let passageBankQueue = [];
+let firstPassageThisSession = true;
+
+function getNextBankPassage() {
+  if (passageBankQueue.length === 0) {
+    // Reshuffle the full bank
+    passageBankQueue = [...PASSAGE_BANK].sort(() => Math.random() - 0.5);
+  }
+  return passageBankQueue.pop();
+}
+
+const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 2–3 sentences of natural, everyday spoken English on a random everyday topic such as weekend plans, food, neighbours, travel, work, or family. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
 
 async function loadPassage() {
   isLoading = true;
-  document.getElementById('english-para').textContent = 'Generating passage…';
   document.getElementById('translation-input').value = '';
   document.getElementById('check-btn').disabled = true;
   currentPassage = '';
-  const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-  try {
-    const text = await callAI(PASSAGE_SYSTEM, 'Topic: ' + topic);
-    currentPassage = text.trim();
+
+  if (firstPassageThisSession) {
+    // Try AI generation for the first passage
+    firstPassageThisSession = false;
+    document.getElementById('english-para').textContent = 'Generating passage…';
+    try {
+      const text = await callAI(PASSAGE_SYSTEM, 'Generate a passage.');
+      currentPassage = text.trim();
+      document.getElementById('english-para').textContent = currentPassage;
+    } catch(e) {
+      // Fall back to pre-written bank on any error
+      currentPassage = getNextBankPassage();
+      document.getElementById('english-para').textContent = currentPassage;
+    }
+  } else {
+    // All subsequent passages come from the pre-written bank
+    currentPassage = getNextBankPassage();
     document.getElementById('english-para').textContent = currentPassage;
-  } catch(e) {
-    showPassageError(e.message || '');
   }
+
   isLoading = false;
 }
 
