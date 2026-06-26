@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>French Practice</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css" />
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.0</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.1</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,12 +282,12 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.0</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.1</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
-        <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank"><i class="ti ti-bookmark"></i></button>
-        <button class="icon-btn" onclick="showSetup()" aria-label="Settings — switch provider or update key"><i class="ti ti-settings"></i></button>
+        <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank">🔖</button>
+        <button class="icon-btn" onclick="showSetup()" aria-label="Settings — switch provider or update key">⚙</button>
       </div>
     </div>
     <div class="card">
@@ -297,42 +297,42 @@
     <div class="label" style="margin-bottom:6px;">Your French translation</div>
     <textarea id="translation-input" placeholder="Écrivez votre traduction ici…" oninput="checkReady()"></textarea>
     <button class="btn-primary" id="check-btn" onclick="checkTranslation()" disabled>Check my translation</button>
-    <button class="btn-secondary" onclick="newPassage()">New passage &nbsp;<i class="ti ti-refresh" style="font-size:15px;vertical-align:-2px;"></i></button>
+    <button class="btn-secondary" onclick="newPassage()">New passage &nbsp;↺</button>
     <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
-      <i class="ti ti-bookmark" style="font-size:15px;vertical-align:-2px;margin-right:6px;"></i>View phrase bank &amp; export to Anki
+      🔖 View phrase bank &amp; export to Anki
     </button>
     <button class="btn-secondary" onclick="showSetup()" style="margin-top:16px;border-color:transparent;color:var(--text-tertiary);font-size:13px;">
-      <i class="ti ti-settings" style="font-size:14px;vertical-align:-2px;margin-right:6px;"></i>Settings — change API key or provider
+      ⚙ Settings — change API key or provider
     </button>
   </div>
 
   <!-- Feedback screen -->
   <div id="screen-feedback" class="screen">
     <div class="header">
-      <button class="icon-btn" onclick="showMain()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+      <button class="icon-btn" onclick="showMain()" aria-label="Back">←</button>
       <div class="header-title">Feedback</div>
-      <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank"><i class="ti ti-bookmark"></i></button>
+      <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank">🔖</button>
     </div>
     <div class="card" style="margin-bottom:1rem;">
       <div class="label">Your translation</div>
       <div class="your-attempt" id="your-attempt-display"></div>
     </div>
     <div id="feedback-content"></div>
-    <button class="btn-primary" onclick="newPassage()">Next passage &nbsp;<i class="ti ti-arrow-right" style="font-size:15px;vertical-align:-2px;"></i></button>
+    <button class="btn-primary" onclick="newPassage()">Next passage &nbsp;→</button>
     <button class="btn-secondary" onclick="showMain()">Edit my translation</button>
     <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
-      <i class="ti ti-bookmark" style="font-size:15px;vertical-align:-2px;margin-right:6px;"></i>View phrase bank &amp; export to Anki
+      🔖 View phrase bank &amp; export to Anki
     </button>
   </div>
 
   <!-- Phrase bank screen -->
   <div id="screen-bank" class="screen">
     <div class="header">
-      <button class="icon-btn" onclick="goBack()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+      <button class="icon-btn" onclick="goBack()" aria-label="Back">←</button>
       <div class="header-title">Phrase bank</div>
       <div style="display:flex;gap:4px;align-items:center;">
         <span class="count-badge" id="bank-count">0</span>
-        <button class="icon-btn" onclick="exportAnki()" aria-label="Download Anki flashcards" title="Download Anki flashcards"><i class="ti ti-download"></i></button>
+        <button class="icon-btn" onclick="exportAnki()" aria-label="Download Anki flashcards" title="Download Anki flashcards">⬇</button>
       </div>
     </div>
     <div id="bank-export-msg" class="note-box note-success" style="display:none;margin-bottom:0.75rem;"></div>
@@ -688,11 +688,11 @@ function renderFeedback(data, isFinal = true) {
   let html = '';
 
   if (data.wellDone && data.wellDone.trim()) {
-    html += `<div class="note-box note-success"><i class="ti ti-check" style="margin-right:6px;vertical-align:-2px;"></i>${esc(data.wellDone)}</div>`;
+    html += `<div class="note-box note-success">✓ ${esc(data.wellDone)}</div>`;
   }
 
   if (data.phrases && data.phrases.length > 0) {
-    html += `<div class="feedback-section"><div class="feedback-title"><i class="ti ti-vocabulary" style="font-size:15px;"></i> Phrases to learn</div>`;
+    html += `<div class="feedback-section"><div class="feedback-title">💬 Phrases to learn</div>`;
     data.phrases.forEach((p, i) => {
       const safeP = JSON.stringify(p).replace(/'/g, '&#39;');
       html += `<div class="chunk-card">
@@ -701,9 +701,9 @@ function renderFeedback(data, isFinal = true) {
           <div class="chunk-fr">${esc(p.fr)}</div>
         </div>
         <div class="chunk-note">${esc(p.note)}</div>
-        ${p.formal ? `<div class="chunk-formal"><i class="ti ti-pencil" style="font-size:12px;margin-right:4px;vertical-align:-1px;"></i>Formally: <em>${esc(p.formal)}</em></div>` : ''}
+        ${p.formal ? `<div class="chunk-formal">✏ Formally: <em>${esc(p.formal)}</em></div>` : ''}
         <button class="save-btn" id="pbtn-${i}" onclick='savePhrase(${safeP}, "pbtn-${i}")'>
-          <i class="ti ti-bookmark" style="font-size:14px;margin-right:4px;vertical-align:-2px;"></i>Save phrase
+          🔖 Save phrase
         </button>
       </div>`;
     });
@@ -711,13 +711,13 @@ function renderFeedback(data, isFinal = true) {
   }
 
   if (data.grammar && data.grammar.length > 0) {
-    html += `<div class="feedback-section"><div class="feedback-title"><i class="ti ti-adjustments" style="font-size:15px;"></i> Grammar</div>`;
+    html += `<div class="feedback-section"><div class="feedback-title">📝 Grammar</div>`;
     data.grammar.forEach(g => { html += `<div class="note-box note-danger">${esc(g)}</div>`; });
     html += '</div>';
   }
 
   if (data.spelling && data.spelling.length > 0) {
-    html += `<div class="feedback-section"><div class="feedback-title"><i class="ti ti-pencil" style="font-size:15px;"></i> Spelling &amp; accents</div>`;
+    html += `<div class="feedback-section"><div class="feedback-title">✏ Spelling &amp; accents</div>`;
     data.spelling.forEach(s => { html += `<div class="note-box note-amber">${esc(s)}</div>`; });
     html += '</div>';
   }
@@ -736,7 +736,7 @@ function savePhrase(phrase, btnId) {
   const btn = document.getElementById(btnId);
   if (btn) {
     btn.classList.add('saved');
-    btn.innerHTML = '<i class="ti ti-check" style="font-size:14px;margin-right:4px;vertical-align:-2px;"></i>Saved';
+    btn.innerHTML = '✓ Saved';
     btn.disabled = true;
   }
 }
@@ -752,17 +752,17 @@ function renderBank() {
   document.getElementById('bank-count').textContent = phraseBank.length;
   const el = document.getElementById('bank-content');
   if (phraseBank.length === 0) {
-    el.innerHTML = '<div class="empty-state"><i class="ti ti-bookmark"></i>No phrases saved yet.<br><br>Save chunks from your feedback to build your personal phrasebook.</div>';
+    el.innerHTML = '<div class="empty-state">🔖No phrases saved yet.<br><br>Save chunks from your feedback to build your personal phrasebook.</div>';
     return;
   }
   let html = '<div class="card">';
   phraseBank.forEach((p, i) => {
     html += `<div class="phrase-item">
-      <button class="delete-btn" onclick="deletePhrase(${i})" aria-label="Remove phrase"><i class="ti ti-x"></i></button>
+      <button class="delete-btn" onclick="deletePhrase(${i})" aria-label="Remove phrase">✕</button>
       <div class="phrase-en">${esc(p.en)}</div>
       <div class="phrase-fr">${esc(p.fr)}</div>
       ${p.note ? `<div class="phrase-note">${esc(p.note)}</div>` : ''}
-      ${p.formal ? `<div class="phrase-formal"><i class="ti ti-pencil" style="font-size:11px;margin-right:3px;"></i>Formally: <em>${esc(p.formal)}</em></div>` : ''}
+      ${p.formal ? `<div class="phrase-formal">✏ Formally: <em>${esc(p.formal)}</em></div>` : ''}
     </div>`;
   });
   html += '</div>';
