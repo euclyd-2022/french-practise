@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.2</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.3</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.2</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.3</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -430,7 +430,7 @@ function updateProviderLabel() {
   if (el) el.textContent = provider === 'gemini' ? 'Gemini' : 'Claude';
 }
 
-async function callAI(systemPrompt, userMessage, retry = true, onChunk) {
+async function callAI(systemPrompt, userMessage, retryCount = 3, delay = 2000, onChunk) {
   try {
     if (provider === 'gemini') {
       return await callGemini(systemPrompt, userMessage, onChunk);
@@ -438,13 +438,19 @@ async function callAI(systemPrompt, userMessage, retry = true, onChunk) {
       return await callAnthropic(systemPrompt, userMessage);
     }
   } catch(e) {
-    if (retry && e.message && e.message.startsWith('LIMIT:')) {
-      await new Promise(r => setTimeout(r, 15000));
+    if (e.message && e.message.includes('LIMIT:') && retryCount > 0) {
+      const fbContent = document.getElementById('feedback-content');
+      if (fbContent && getCurrentScreen() === 'screen-feedback') {
+        fbContent.innerHTML = `<div style="color:var(--text-secondary);font-size:14px;padding:1rem 0;">
+          Rate limit hit. Retrying in ${delay/1000}s… (${retryCount} ${retryCount === 1 ? 'retry' : 'retries'} left)
+        </div>`;
+      }
       const paraEl = document.getElementById('english-para');
       if (paraEl && paraEl.textContent.includes('Generating')) {
-        paraEl.textContent = 'Rate limit hit — retrying…';
+        paraEl.textContent = `Rate limit hit — retrying in ${delay/1000}s…`;
       }
-      return callAI(systemPrompt, userMessage, false, onChunk);
+      await new Promise(r => setTimeout(r, delay));
+      return callAI(systemPrompt, userMessage, retryCount - 1, delay * 2, onChunk);
     }
     throw e;
   }
@@ -667,7 +673,6 @@ async function checkTranslation() {
   document.getElementById('check-btn').innerHTML = '<span class="spinner"></span>Checking…';
   document.getElementById('your-attempt-display').textContent = attempt;
 
-  // Switch to feedback screen immediately so user can watch it arrive
   document.getElementById('feedback-content').innerHTML =
     '<div style="color:var(--text-tertiary);font-size:14px;padding:1rem 0;">Analysing your translation…</div>';
   show('screen-feedback');
@@ -676,38 +681,39 @@ async function checkTranslation() {
     let lastGoodData = null;
 
     const onChunk = (accumulated) => {
-      // Try to parse whatever we have so far and render partial results
       const clean = accumulated.replace(/```json|```/g, '').trim();
       try {
-        const data = JSON.parse(clean);
+        const repaired = repairPartialJSON(clean);
+        const data = JSON.parse(repaired);
         lastGoodData = data;
-        renderFeedback(data, false); // false = not final yet
+        renderFeedback(data, false);
       } catch(e) {
-        // Not valid JSON yet — try to extract completed sections
         renderPartial(clean);
       }
     };
 
     const raw = await callAI(FEEDBACK_SYSTEM,
       `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`,
-      true, onChunk);
+      3, 2000, onChunk);
 
-    // Final render with complete response
     const clean = raw.replace(/```json|```/g, '').trim();
-    let data;
     try {
-      data = JSON.parse(clean);
+      const data = JSON.parse(clean);
+      renderFeedback(data, true);
     } catch(parseErr) {
-      // Use last good partial parse if available
-      if (lastGoodData) {
-        renderFeedback(lastGoodData, true);
-      } else {
-        document.getElementById('feedback-content').innerHTML =
-          '<div class="note-box note-danger">The response was incomplete. Try again with a shorter translation.</div>';
+      const repaired = repairPartialJSON(clean);
+      try {
+        const data = JSON.parse(repaired);
+        renderFeedback(data, true);
+      } catch(innerErr) {
+        if (lastGoodData) {
+          renderFeedback(lastGoodData, true);
+        } else {
+          document.getElementById('feedback-content').innerHTML =
+            '<div class="note-box note-danger">The stream disconnected early. Please try a shorter translation.</div>';
+        }
       }
-      return;
     }
-    renderFeedback(data, true);
   } catch(e) {
     document.getElementById('feedback-content').innerHTML =
       '<div class="note-box note-danger">' + esc(e.message || 'Something went wrong. Please try again.') + '</div>';
@@ -851,6 +857,38 @@ function exportAnki() {
 }
 
 // ── Utilities ──────────────────────────────────────────────────────────────
+function repairPartialJSON(jsonStr) {
+  let repaired = jsonStr.trim();
+  if (!repaired) return '{}';
+
+  // Fix open quotes
+  let openQuote = false;
+  for (let i = 0; i < repaired.length; i++) {
+    if (repaired[i] === '"' && (i === 0 || repaired[i - 1] !== '\\')) {
+      openQuote = !openQuote;
+    }
+  }
+  if (openQuote) repaired += '"';
+
+  // Clean up trailing commas or uncompleted key/colon sequences
+  repaired = repaired.replace(/,\s*$/, '');
+  repaired = repaired.replace(/:\s*$/, ': null');
+
+  // Balance brackets and braces
+  const stack = [];
+  for (let char of repaired) {
+    if (char === '{' || char === '[') stack.push(char);
+    if (char === '}' || char === ']') stack.pop();
+  }
+  while (stack.length > 0) {
+    const last = stack.pop();
+    if (last === '{') repaired += '}';
+    if (last === '[') repaired += ']';
+  }
+
+  return repaired;
+}
+
 function esc(str) {
   if (!str) return '';
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
