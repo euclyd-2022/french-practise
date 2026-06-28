@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.3</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.6</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,13 +282,18 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.3</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.6</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
         <button class="icon-btn" onclick="showBank()" aria-label="Phrase bank">🔖</button>
         <button class="icon-btn" onclick="showSetup()" aria-label="Settings — switch provider or update key">⚙</button>
       </div>
+    </div>
+    <div id="stats-bar" style="display:flex;justify-content:center;gap:20px;font-size:13px;color:var(--text-tertiary);margin-bottom:1rem;padding:6px 0;border-bottom:0.5px solid var(--border-light);">
+      <span id="stat-streak">No streak yet</span>
+      <span style="opacity:0.4;">|</span>
+      <span id="stat-total">0 translations</span>
     </div>
     <div class="card">
       <div class="label">English</div>
@@ -430,7 +435,7 @@ function updateProviderLabel() {
   if (el) el.textContent = provider === 'gemini' ? 'Gemini' : 'Claude';
 }
 
-async function callAI(systemPrompt, userMessage, retryCount = 3, delay = 2000, onChunk) {
+async function callAI(systemPrompt, userMessage, retryCount = 3, delay = 2000, onChunk, onRetry) {
   try {
     if (provider === 'gemini') {
       return await callGemini(systemPrompt, userMessage, onChunk);
@@ -439,6 +444,7 @@ async function callAI(systemPrompt, userMessage, retryCount = 3, delay = 2000, o
     }
   } catch(e) {
     if (e.message && e.message.includes('LIMIT:') && retryCount > 0) {
+      if (onRetry) onRetry(retryCount, delay);
       const fbContent = document.getElementById('feedback-content');
       if (fbContent && getCurrentScreen() === 'screen-feedback') {
         fbContent.innerHTML = `<div style="color:var(--text-secondary);font-size:14px;padding:1rem 0;">
@@ -450,7 +456,7 @@ async function callAI(systemPrompt, userMessage, retryCount = 3, delay = 2000, o
         paraEl.textContent = `Rate limit hit — retrying in ${delay/1000}s…`;
       }
       await new Promise(r => setTimeout(r, delay));
-      return callAI(systemPrompt, userMessage, retryCount - 1, delay * 2, onChunk);
+      return callAI(systemPrompt, userMessage, retryCount - 1, delay * 2, onChunk, onRetry);
     }
     throw e;
   }
@@ -679,6 +685,7 @@ async function checkTranslation() {
 
   try {
     let lastGoodData = null;
+    let retriesUsed = 0;
 
     const onChunk = (accumulated) => {
       const clean = accumulated.replace(/```json|```/g, '').trim();
@@ -692,22 +699,27 @@ async function checkTranslation() {
       }
     };
 
+    const onRetry = () => { retriesUsed++; };
+
     const raw = await callAI(FEEDBACK_SYSTEM,
       `English passage:\n${currentPassage}\n\nTheir French translation:\n${attempt}`,
-      3, 2000, onChunk);
+      3, 2000, onChunk, onRetry);
 
     const clean = raw.replace(/```json|```/g, '').trim();
     try {
       const data = JSON.parse(clean);
-      renderFeedback(data, true);
+      updateStats();
+      renderFeedback(data, true, retriesUsed);
     } catch(parseErr) {
       const repaired = repairPartialJSON(clean);
       try {
         const data = JSON.parse(repaired);
-        renderFeedback(data, true);
+        updateStats();
+        renderFeedback(data, true, retriesUsed);
       } catch(innerErr) {
         if (lastGoodData) {
-          renderFeedback(lastGoodData, true);
+          updateStats();
+          renderFeedback(lastGoodData, true, retriesUsed);
         } else {
           document.getElementById('feedback-content').innerHTML =
             '<div class="note-box note-danger">The stream disconnected early. Please try a shorter translation.</div>';
@@ -737,8 +749,11 @@ function renderPartial(raw) {
 }
 
 // ── Feedback rendering ─────────────────────────────────────────────────────
-function renderFeedback(data, isFinal = true) {
+function renderFeedback(data, isFinal = true, retriesUsed = 0) {
   let html = '';
+  if (isFinal && retriesUsed > 0) {
+    html += `<div class="note-box note-amber">⚠ Rate limit hit during retrieval — ${retriesUsed === 1 ? '1 retry was needed' : retriesUsed + ' retries were needed'}. Feedback may be partial.</div>`;
+  }
 
   if (data.wellDone && data.wellDone.trim()) {
     html += `<div class="note-box note-success">✓ ${esc(data.wellDone)}</div>`;
@@ -889,6 +904,45 @@ function repairPartialJSON(jsonStr) {
   return repaired;
 }
 
+function getPreviousDay(dateStr) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function updateStats() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (lastTranslationDate === today) {
+    totalTranslations++;
+  } else if (lastTranslationDate === getPreviousDay(today)) {
+    currentStreak++;
+    totalTranslations++;
+    lastTranslationDate = today;
+  } else {
+    currentStreak = 1;
+    totalTranslations++;
+    lastTranslationDate = today;
+  }
+  localStorage.setItem('fr_total_translations', totalTranslations);
+  localStorage.setItem('fr_streak', currentStreak);
+  localStorage.setItem('fr_last_date', lastTranslationDate);
+  renderStats();
+}
+
+function renderStats() {
+  const streakEl = document.getElementById('stat-streak');
+  const totalEl  = document.getElementById('stat-total');
+  if (!streakEl || !totalEl) return;
+  const flame = String.fromCodePoint(0x1F525);
+  const dayLabel = currentStreak === 1 ? 'day' : 'days';
+  streakEl.textContent = currentStreak > 0
+    ? (flame + ' ' + currentStreak + ' ' + dayLabel + ' streak')
+    : 'No streak yet';
+  totalEl.textContent = totalTranslations === 1
+    ? '1 translation'
+    : (totalTranslations + ' translations');
+}
+
 function esc(str) {
   if (!str) return '';
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -897,6 +951,8 @@ function esc(str) {
 // ── Init ───────────────────────────────────────────────────────────────────
 updatePhraseCount();
 updateProviderLabel();
+renderStats();
+renderStats();
 selectProvider(provider, false);
 
 const hasKey = (provider === 'anthropic' && anthropicKey) || (provider === 'gemini' && geminiKey);
