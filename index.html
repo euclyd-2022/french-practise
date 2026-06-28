@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.6</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.7</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.6</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.7</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -708,18 +708,18 @@ async function checkTranslation() {
     const clean = raw.replace(/```json|```/g, '').trim();
     try {
       const data = JSON.parse(clean);
-      updateStats();
       renderFeedback(data, true, retriesUsed);
+      updateStats();
     } catch(parseErr) {
       const repaired = repairPartialJSON(clean);
       try {
         const data = JSON.parse(repaired);
-        updateStats();
         renderFeedback(data, true, retriesUsed);
+        updateStats();
       } catch(innerErr) {
         if (lastGoodData) {
-          updateStats();
           renderFeedback(lastGoodData, true, retriesUsed);
+          updateStats();
         } else {
           document.getElementById('feedback-content').innerHTML =
             '<div class="note-box note-danger">The stream disconnected early. Please try a shorter translation.</div>';
@@ -911,36 +911,57 @@ function getPreviousDay(dateStr) {
 }
 
 function updateStats() {
-  const today = new Date().toISOString().slice(0, 10);
-  if (lastTranslationDate === today) {
-    totalTranslations++;
-  } else if (lastTranslationDate === getPreviousDay(today)) {
-    currentStreak++;
-    totalTranslations++;
-    lastTranslationDate = today;
-  } else {
-    currentStreak = 1;
-    totalTranslations++;
-    lastTranslationDate = today;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    // Day one: handle empty string for lastTranslationDate
+    if (!lastTranslationDate || lastTranslationDate === '') {
+      currentStreak = 1;
+      totalTranslations = 1;
+      lastTranslationDate = today;
+    } else if (lastTranslationDate === today) {
+      // Already done today — just increment total
+      totalTranslations++;
+    } else if (lastTranslationDate === getPreviousDay(today)) {
+      // Consecutive day — extend streak
+      currentStreak++;
+      totalTranslations++;
+      lastTranslationDate = today;
+    } else {
+      // Gap in streak — reset to 1
+      currentStreak = 1;
+      totalTranslations++;
+      lastTranslationDate = today;
+    }
+    if (currentStreak > maxStreak) maxStreak = currentStreak;
+    localStorage.setItem('fr_total_translations', String(totalTranslations));
+    localStorage.setItem('fr_streak', String(currentStreak));
+    localStorage.setItem('fr_max_streak', String(maxStreak));
+    localStorage.setItem('fr_last_date', lastTranslationDate);
+    renderStats();
+  } catch(e) {
+    console.error('updateStats error:', e);
+    // Never let a stats error affect the feedback display
   }
-  localStorage.setItem('fr_total_translations', totalTranslations);
-  localStorage.setItem('fr_streak', currentStreak);
-  localStorage.setItem('fr_last_date', lastTranslationDate);
-  renderStats();
 }
 
 function renderStats() {
-  const streakEl = document.getElementById('stat-streak');
-  const totalEl  = document.getElementById('stat-total');
-  if (!streakEl || !totalEl) return;
-  const flame = String.fromCodePoint(0x1F525);
-  const dayLabel = currentStreak === 1 ? 'day' : 'days';
-  streakEl.textContent = currentStreak > 0
-    ? (flame + ' ' + currentStreak + ' ' + dayLabel + ' streak')
-    : 'No streak yet';
-  totalEl.textContent = totalTranslations === 1
-    ? '1 translation'
-    : (totalTranslations + ' translations');
+  try {
+    const streakEl = document.getElementById('stat-streak');
+    const maxEl    = document.getElementById('stat-max');
+    const totalEl  = document.getElementById('stat-total');
+    if (!streakEl) return;
+    const flame  = String.fromCodePoint(0x1F525);
+    const trophy = String.fromCodePoint(0x1F3C6);
+    const dayLabel = currentStreak === 1 ? 'day' : 'days';
+    const maxLabel = maxStreak === 1 ? 'day' : 'days';
+    streakEl.textContent = currentStreak > 0
+      ? (flame + ' ' + currentStreak + ' ' + dayLabel)
+      : 'No streak';
+    if (maxEl) maxEl.textContent = trophy + ' Best: ' + maxStreak + ' ' + maxLabel;
+    if (totalEl) totalEl.textContent = totalTranslations + ' done';
+  } catch(e) {
+    console.error('renderStats error:', e);
+  }
 }
 
 function esc(str) {
