@@ -248,21 +248,21 @@
     <div class="card">
       <div class="label">AI provider</div>
       <div class="provider-picker">
-        <button class="provider-btn active" id="btn-anthropic" onclick="selectProvider('anthropic')">
+        <button class="provider-btn" id="btn-anthropic" onclick="selectProvider('anthropic')" style="display:none;">
           Anthropic<span>Claude · paid</span>
         </button>
-        <button class="provider-btn" id="btn-gemini" onclick="selectProvider('gemini')">
+        <button class="provider-btn active" id="btn-gemini" onclick="selectProvider('gemini')">
           Google<span>Gemini · free tier</span>
         </button>
       </div>
 
-      <div id="provider-info-anthropic">
+      <div id="provider-info-anthropic" style="display:none;">
         <div class="label">Anthropic API key</div>
         <input class="api-input" type="password" id="key-anthropic" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
         <div class="hint">Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — you'll need a small credit balance to activate it (a few pounds goes a long way).</div>
       </div>
 
-      <div id="provider-info-gemini" style="display:none;">
+      <div id="provider-info-gemini">
         <div class="label">Gemini API key</div>
         <input class="api-input" type="password" id="key-gemini" placeholder="AQ... or AIza..." autocomplete="off" spellcheck="false" />
         <div class="hint">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> — no credit card needed. Uses Gemini 2.5 Flash.</div>
@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.1</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.2</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.1</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.2</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -338,7 +338,7 @@
 </div>
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
-let provider    = localStorage.getItem('fr_provider') || 'anthropic';
+let provider    = localStorage.getItem('fr_provider') || 'gemini';
 let anthropicKey = localStorage.getItem('fr_key_anthropic') || '';
 let geminiKey    = localStorage.getItem('fr_key_gemini') || '';
 let currentPassage = '';
