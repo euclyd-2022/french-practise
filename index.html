@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v2.9</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.0</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v2.9</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.0</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -306,12 +306,7 @@
     <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
       🔖 View phrase bank &amp; export to Anki
     </button>
-    <button class="btn-secondary" id="finish-btn" onclick="finishForToday()" style="margin-top:12px;border-color:transparent;color:var(--text-tertiary);font-size:13px;display:none;">
-      ✓ Finish for today
-    </button>
-    <div id="finished-msg" style="display:none;text-align:center;padding:1rem;margin-top:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);font-size:14px;color:var(--text-secondary);">
-      ✓ Your practice is logged for today. Good job! 🎉
-    </div>
+
     <button class="btn-secondary" onclick="showSetup()" style="margin-top:16px;border-color:transparent;color:var(--text-tertiary);font-size:13px;">
       ⚙ Settings — change API key or provider
     </button>
@@ -644,7 +639,6 @@ async function newPassage() {
 function checkReady() {
   const val = document.getElementById('translation-input').value.trim();
   document.getElementById('check-btn').disabled = val.length < 4 || isLoading;
-  updateFinishButton();
 }
 
 // ── Translation checking ───────────────────────────────────────────────────
@@ -971,41 +965,12 @@ function renderStats() {
   }
 }
 
-function finishForToday() {
+function markDayComplete() {
   if (!finishedToday) {
-    updateStats();
     const today = getTodayKey();
     localStorage.setItem(today, 'true');
     finishedToday = true;
-    showFinishNotice();
   }
-}
-
-function showFinishNotice() {
-  const msg = document.getElementById('finished-msg');
-  if (msg) {
-    msg.style.display = 'block';
-    // Auto-hide after 3 seconds
-    setTimeout(() => { msg.style.display = 'none'; }, 3000);
-  }
-  document.getElementById('finish-btn').style.display = 'none';
-}
-
-function showFinishedState() {
-  // Only called on init if they've already finished today
-  document.getElementById('finish-btn').style.display = 'none';
-  const msg = document.getElementById('finished-msg');
-  if (msg) msg.style.display = 'block';
-}
-
-function updateFinishButton() {
-  const btn = document.getElementById('finish-btn');
-  const input = document.getElementById('translation-input');
-  if (!btn || !input) return;
-  
-  // Show finish button only if they've typed something and haven't finished yet
-  const hasAttempt = input.value.trim().length > 0;
-  btn.style.display = (hasAttempt && !finishedToday) ? 'block' : 'none';
 }
 
 function esc(str) {
@@ -1021,9 +986,6 @@ renderStats();
 selectProvider(provider, false);
 
 checkIfFinishedToday();
-if (finishedToday) {
-  showFinishedState();
-}
 const hasKey = (provider === 'anthropic' && anthropicKey) || (provider === 'gemini' && geminiKey);
 if (hasKey) {
   show('screen-main');
