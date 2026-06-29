@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.4</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.5</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.4</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.5</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -711,18 +711,21 @@ async function checkTranslation() {
     const clean = raw.replace(/```json|```/g, '').trim();
     try {
       const data = JSON.parse(clean);
-      renderFeedback(data, true, retriesUsed);
       updateStats();
+      markDayComplete();
+      renderFeedback(data, true, retriesUsed);
     } catch(parseErr) {
       const repaired = repairPartialJSON(clean);
       try {
         const data = JSON.parse(repaired);
-        renderFeedback(data, true, retriesUsed);
         updateStats();
+        markDayComplete();
+        renderFeedback(data, true, retriesUsed);
       } catch(innerErr) {
         if (lastGoodData) {
-          renderFeedback(lastGoodData, true, retriesUsed);
           updateStats();
+          markDayComplete();
+          renderFeedback(lastGoodData, true, retriesUsed);
         } else {
           document.getElementById('feedback-content').innerHTML =
             '<div class="note-box note-danger">The stream disconnected early. Please try a shorter translation.</div>';
