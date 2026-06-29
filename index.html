@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.2</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.3</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.2</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.3</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -765,7 +765,7 @@ function renderFeedback(data, isFinal = true, retriesUsed = 0) {
   if (data.phrases && data.phrases.length > 0) {
     html += `<div class="feedback-section"><div class="feedback-title">💬 Phrases to learn</div>`;
     data.phrases.forEach((p, i) => {
-      const safeP = JSON.stringify(p).replace(/'/g, '&#39;');
+      const safeP = JSON.stringify(p).replace(/\\/g, '\\\\').replace(/"/g, '&quot;');
       html += `<div class="chunk-card">
         <div class="chunk-pair">
           <div class="chunk-en">${esc(p.en)}</div>
@@ -773,7 +773,7 @@ function renderFeedback(data, isFinal = true, retriesUsed = 0) {
         </div>
         <div class="chunk-note">${esc(p.note)}</div>
         ${p.formal ? `<div class="chunk-formal">✏ Formally: <em>${esc(p.formal)}</em></div>` : ''}
-        <button class="save-btn" id="pbtn-${i}" onclick='savePhrase(${safeP}, "pbtn-${i}")'>
+        <button class="save-btn" id="pbtn-${i}" onclick="savePhrase(${safeP}, 'pbtn-${i}')">
           🔖 Save phrase
         </button>
       </div>`;
