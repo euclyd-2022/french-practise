@@ -273,7 +273,7 @@
 
     <button class="btn-primary" onclick="startApp()">Save &amp; start</button>
     <button class="btn-secondary" id="back-to-app-btn" style="display:none;" onclick="goBack()">Back without saving</button>
-    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.0</div>
+    <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--text-tertiary);">v3.1</div>
   </div>
 
   <!-- Main practice screen -->
@@ -282,7 +282,7 @@
       <div style="display:flex;align-items:center;gap:6px;">
         <div class="header-title">Translate this</div>
         <span class="provider-badge" id="provider-label">Claude</span>
-        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.0</span>
+        <span style="font-size:10px;color:var(--text-tertiary);margin-left:2px;">v3.1</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="count-badge" id="phrase-count">0 saved</span>
@@ -303,13 +303,6 @@
     <textarea id="translation-input" placeholder="Écrivez votre traduction ici…" oninput="checkReady()"></textarea>
     <button class="btn-primary" id="check-btn" onclick="checkTranslation()" disabled>Check my translation</button>
     <button class="btn-secondary" onclick="newPassage()">New passage &nbsp;↺</button>
-    <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
-      🔖 View phrase bank &amp; export to Anki
-    </button>
-
-    <button class="btn-secondary" onclick="showSetup()" style="margin-top:16px;border-color:transparent;color:var(--text-tertiary);font-size:13px;">
-      ⚙ Settings — change API key or provider
-    </button>
   </div>
 
   <!-- Feedback screen -->
@@ -326,9 +319,6 @@
     <div id="feedback-content"></div>
     <button class="btn-primary" onclick="newPassage()">Next passage &nbsp;→</button>
     <button class="btn-secondary" onclick="showMain()">Edit my translation</button>
-    <button class="btn-secondary" onclick="showBank()" style="margin-top:8px;">
-      🔖 View phrase bank &amp; export to Anki
-    </button>
   </div>
 
   <!-- Phrase bank screen -->
@@ -575,10 +565,22 @@ const PASSAGE_BANK = [
   "I've been sleeping really badly lately. I wake up at about three in the morning and then can't get back off.",
   "My colleague's leaving at the end of the month so we're organising a leaving do. I just need to find somewhere that's not too expensive.",
   "I finally sorted out that drawer in the kitchen that's been full of random junk for years. Found things in there I'd completely forgotten about.",
-  "It's my parents' wedding anniversary next month — they're going to be married for forty years. We're thinking of organising a surprise dinner."
-];
-
-let passageBankQueue = [];
+  "It's my parents' wedding anniversary next month — they're going to be married for forty years. We're thinking of organising a surprise dinner.",
+  "The train was delayed by forty minutes this morning. I rang work but I was still late for the meeting.",
+  "I went to the doctor's about this cough and he says it's just a virus. Should clear up in a week or so.",
+  "The restaurant got my order completely wrong. They brought me fish when I'd asked for chicken.",
+  "I asked for directions three times and still got lost. The street signs are impossible to read in that part of town.",
+  "The wifi's been down all day and I've got an important deadline. I'm using my mobile data but it's costing me a fortune.",
+  "I went to the market and managed to haggle the price down on the fruit. The seller wasn't happy but accepted it in the end.",
+  "The plumber came round but said he can't fix the leak until next week. I've got buckets everywhere catching the drips.",
+  "I tried the new restaurant on Park Road. The food was lovely but the service was painfully slow.",
+  "I bumped into my old teacher at the bus stop. We hadn't spoken in years but it was nice to catch up.",
+  "The flight got cancelled due to fog. We had to rebook for the following day which completely ruined our plans.",
+  "I went to the hairdresser's and she cut my hair way too short. I asked her to fix it but I'm still not happy with it.",
+  "The landlord finally fixed the broken radiator. The flat's actually warm for once.",
+  "I tried to return something at the shop but they said they didn't accept returns. The tag was still on it too.",
+  "I picked up my dry cleaning and they've lost one of my jumpers. I've left them a furious message."
+];let passageBankQueue = [];
 let firstPassageThisSession = true;
 
 function getNextBankPassage() {
@@ -589,7 +591,7 @@ function getNextBankPassage() {
   return passageBankQueue.pop();
 }
 
-const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 2–3 sentences of natural, everyday spoken English on a random everyday topic such as weekend plans, food, neighbours, travel, work, or family. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud — not formal written English. Return only the passage with no preamble, labels, or quotation marks.';
+const PASSAGE_SYSTEM = 'You generate short English passages for French translation practice. Write 2–3 sentences of natural, everyday spoken English on a specific, concrete scenario (not generic chat). Pick varied real-life situations: ordering at a café, describing a train delay, complaining about a broken appliance, explaining why you're late, discussing a movie, talking about a health issue, negotiating a price, asking for directions, describing weather impact on plans, etc. Use contractions, colloquial vocabulary, and the kind of language people actually say aloud. Return only the passage with no preamble, labels, or quotation marks.';
 
 async function loadPassage() {
   isLoading = true;
